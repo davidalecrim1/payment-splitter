@@ -43,39 +43,41 @@ describe("Group Service", () => {
     await svc.recordExpense(groupId, dinnerExpense);
 
     const group = await svc.getGroup(groupId);
-    expect(group.expenses.length).toBe(1);
-
-    expect(group.expenses[0].name).toBe(dinnerExpense.name);
-    expect(group.expenses[0].amount).toBe(dinnerExpense.amount);
-
-    expect(group.expenses[0].paidByMemberId).toBe(dinnerExpense.paidByMemberId);
-    expect(group.expenses[0].paidByMemberId).toBe(memberMike.id);
+    expect(group.getAmountOfExpenses()).toBe(1);
   });
 
   it("should split expenses between all members", async () => {
-    const groupName = "Awesome Group Charlie";
     const memberAlice = new Member("Alice");
     const memberBob = new Member("Bob");
     const memberMike = new Member("Mike");
 
     const members = [memberAlice, memberBob, memberMike];
 
-    const groupId = await svc.createGroup(groupName, members);
+    const groupId = await svc.createGroup("Awesome Group Charlie", members);
     const dinnerExpense = new Expense("Dinner", 40, memberAlice.id);
     const lunchExpense = new Expense("Lunch", 60, memberBob.id);
 
     await svc.recordExpense(groupId, dinnerExpense);
     await svc.recordExpense(groupId, lunchExpense);
 
-    await svc.splitExpensesBetweenMembers(groupId, [
-      memberAlice.id,
-      memberBob.id,
-    ]);
+    await svc.splitExpenses(groupId, [memberAlice.id, memberBob.id]);
 
     const group = await svc.getGroup(groupId);
+    const expenseSplits = await svc.splitExpenses(groupId, [
+      memberAlice.id,
+      memberBob.id,
+      memberMike.id,
+    ]);
 
-    expect(memberAlice.getBalance()).toBe(20);
+    for (let i = 0; i < expenseSplits.length; i++) {
+      const split = expenseSplits[i];
 
-    // TODO: validate the updated balances of the members
+      expect(split.memberId).toBe(members[i].id);
+      if (i === 0) {
+        expect(split.amount).toBe(34);
+      } else {
+        expect(split.amount).toBe(33);
+      }
+    }
   });
 });

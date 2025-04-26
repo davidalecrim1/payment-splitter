@@ -1,9 +1,4 @@
-import {
-  Expense,
-  Group,
-  Member,
-  MemberCurrentBalance,
-} from "../entities/Group.ts";
+import { Expense, ExpenseSplit, Group, Member } from "../entities/Group.ts";
 import { GroupRepository } from "./GroupRepository.ts";
 
 export class GroupService {
@@ -30,66 +25,18 @@ export class GroupService {
 
   async recordExpense(groupId: string, expense: Expense): Promise<void> {
     const group = await this.getGroup(groupId);
-    group.expenses.push(expense);
+    group.addExpense(expense);
     await this.repo.putGroup(group);
-
-    return;
   }
 
-  async splitExpensesBetweenMembers(
+  async splitExpenses(
     groupId: string,
     splitBetweenMembersIds: string[]
-  ): Promise<void> {
+  ): Promise<ExpenseSplit[]> {
     const group = await this.getGroup(groupId);
-
-    if (group.expenses.length === 0) {
-      throw new Error("No expenses to split");
-    }
-
-    if (splitBetweenMembersIds.length === 0) {
-      throw new Error("No members provided to split the expense");
-    }
-
-    const totalExpensesAmount = group.expenses.reduce(
-      (acc, expense) => acc + expense.amount,
-      0
-    );
-
-    const amountPerMember = totalExpensesAmount / splitBetweenMembersIds.length;
-    const remainder =
-      totalExpensesAmount - amountPerMember * splitBetweenMembersIds.length;
-
-    for (const member of group.members) {
-      if (splitBetweenMembersIds.includes(member.id)) {
-        member.updateBalance(amountPerMember);
-      } else {
-        member.updateBalance(-amountPerMember);
-      }
-    }
-
-    if (remainder > 0) {
-      const lastMember = group.members[group.members.length - 1];
-      lastMember.updateBalance(remainder);
-    }
-
-    return;
-  }
-
-  async getMembersBalances(groupId: string): Promise<MemberCurrentBalance[]> {
-    const group = await this.getGroup(groupId);
-
-    const membersBalances: MemberCurrentBalance[] = [];
-    for (const member of group.members) {
-      const memberBalance = new MemberCurrentBalance(
-        member.id,
-        member.name,
-        member.getBalance()
-      );
-
-      membersBalances.push(memberBalance);
-    }
-
-    return membersBalances;
+    const expenseSplits = group.splitExpenses(splitBetweenMembersIds);
+    await this.repo.putGroup(group);
+    return expenseSplits;
   }
 
   async addSettlement(
