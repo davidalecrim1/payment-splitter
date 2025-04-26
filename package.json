@@ -7,7 +7,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node --enable-source-maps dist/index.js",
-    "dev": "node --no-warnings --enable-source-maps --loader ts-node/esm src/index.ts"
+    "dev": "node --no-warnings --enable-source-maps --loader ts-node/esm src/index.ts",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "author": "",
   "license": "ISC",

@@ -4,11 +4,13 @@
     "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "target": "ES2021",
+    "target": "ES2022",
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    //"strict": true,
   },
   "include": ["src/**/*"],
 }
