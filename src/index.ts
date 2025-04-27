@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/group", GroupRoutes);
+app.use("/groups", GroupRoutes);
 
 app.get("/ping", (req, res) => {
   res.status(200).json({ message: "pong" });

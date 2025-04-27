@@ -1,4 +1,5 @@
 import { v7 as uuidv7 } from "uuid";
+import { MemberNotFoundError } from "./Errors.ts";
 
 export type MemberId = string;
 
@@ -20,13 +21,14 @@ export class Group {
   getMember(memberId: string): Member {
     const member = this.members.find((m) => m.id === memberId);
     if (!member) {
-      throw new Error("Member not found");
+      throw new MemberNotFoundError();
     }
 
     return member;
   }
 
   addExpense(expense: Expense) {
+    this.getMember(expense.paidByMemberId);
     this.expenses.push(expense);
     // TODO: Decide if we need to update the member balance here
     // using the splitExpenses method.
@@ -38,7 +40,7 @@ export class Group {
     }
 
     if (betweenMembers.length === 0) {
-      throw new Error("No members provided to split the expense");
+      betweenMembers = this.members.map((m) => m.id);
     }
 
     const totalAmount = this.expenses.reduce(
@@ -79,7 +81,7 @@ export class Group {
   }
 
   getMembersBalances(
-    splitExpensesBetweenMembers: MemberId[] = this.members.map((m) => m.id)
+    splitExpensesBetweenMembers?: MemberId[]
   ): MemberBalance[] {
     const expensesToBeSplited = this.splitExpenses(splitExpensesBetweenMembers);
     const membersBalances: MemberBalance[] = [];
@@ -127,6 +129,12 @@ export class Group {
   }
 
   setttleDebts(settlement: Settlement) {
+    const fromMember = this.getMember(settlement.fromMemberId);
+    const toMember = this.getMember(settlement.toMemberId);
+    if (fromMember.id === toMember.id) {
+      throw new Error("Cannot settle debt with yourself");
+    }
+
     this.setlements.push(settlement);
   }
 }

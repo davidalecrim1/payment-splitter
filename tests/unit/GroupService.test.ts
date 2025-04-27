@@ -190,10 +190,12 @@ describe("Group Service", () => {
       memberCharles.id,
       15
     );
-    group.setttleDebts(settleBetweenGusAndCharles);
+
+    svc.addSettlement(groupId, settleBetweenGusAndCharles);
+    const updatedGroup = await svc.getGroup(groupId);
 
     // TODO: Rethink this. It could cause a bug giving the settlement registration, but I need to pass the division again.
-    const updatedMembersBalances = group.getMembersBalances([
+    const updatedMembersBalances = updatedGroup.getMembersBalances([
       memberGus.id,
       memberCharles.id,
     ]);

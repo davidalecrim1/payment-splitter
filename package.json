@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node --enable-source-maps dist/index.js",
-    "dev": "node --no-warnings --enable-source-maps --loader ts-node/esm src/index.ts",
+    "dev": "MOCK_DATABASE=true node --no-warnings --enable-source-maps --loader ts-node/esm src/index.ts",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
@@ -16,7 +16,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

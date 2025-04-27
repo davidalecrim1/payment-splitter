@@ -1,9 +1,11 @@
+import { GroupNotFoundError } from "../entities/Errors.ts";
 import {
   Expense,
   Group,
   Member,
   MemberBalance,
   MemberId,
+  Settlement,
 } from "../entities/Group.ts";
 import { GroupRepository } from "./GroupRepository.ts";
 
@@ -14,8 +16,8 @@ export class GroupService {
     this.repo = _repo;
   }
 
-  async createGroup(_name: string, _members: Member[]): Promise<string> {
-    const group = new Group(_name, _members);
+  async createGroup(name: string, members: Member[]): Promise<string> {
+    const group = new Group(name, members);
     await this.repo.putGroup(group);
     return group.id;
   }
@@ -23,7 +25,7 @@ export class GroupService {
   async getGroup(groupId: string): Promise<Group> {
     const group = await this.repo.getById(groupId);
     if (!group) {
-      throw new Error("Group not found");
+      throw new GroupNotFoundError();
     }
 
     return group;
@@ -40,25 +42,12 @@ export class GroupService {
     splitExpensesBetweenMembers?: MemberId[]
   ): Promise<MemberBalance[]> {
     const group = await this.getGroup(groupId);
-    if (splitExpensesBetweenMembers === undefined) {
-      return group.getMembersBalances();
-    }
-
     return group.getMembersBalances(splitExpensesBetweenMembers);
   }
 
-  async addSettlement(
-    fromMemberId: number,
-    toMemberId: number,
-    amount: number,
-    groupId: number
-  ): Promise<void> {
-    // TODO: Implement the logic.
-    return;
-  }
-
-  async getSettlements(groupId: number): Promise<any[]> {
-    // TODO: Implement the logic.
-    return [];
+  async addSettlement(groupId: string, settlement: Settlement): Promise<void> {
+    const group = await this.getGroup(groupId);
+    group.setttleDebts(settlement);
+    await this.repo.putGroup(group);
   }
 }
