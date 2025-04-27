@@ -1,5 +1,5 @@
 import { FakeGroupRepository } from "../../src/adapters/FakeGroupRepository.ts";
-import { Expense, Member } from "../../src/entities/Group.ts";
+import { Expense, Member, Settlement } from "../../src/entities/Group.ts";
 import { GroupRepository } from "../../src/services/GroupRepository.ts";
 import { GroupService } from "../../src/services/GroupService.ts";
 
@@ -30,7 +30,7 @@ describe("Group Service", () => {
     expect(createdGroup.id).toBe(groupId);
   });
 
-  it("should record an expense", async () => {
+  it("should record an expense in a group", async () => {
     const groupName = "Awesome Group Bravo";
     const memberMike = new Member("Mike");
     const memberJohn = new Member("John");
@@ -130,7 +130,82 @@ describe("Group Service", () => {
       (balance) => balance.memberId === memberZeke.id
     );
 
-    // Mike should pay 33 to the others members because he didn't pay anything.
+    // Mike won't pay anything given he is not in the split.
     expect(mikeBalance?.balance).toBe(0);
+  });
+
+  it("should update balances giving settlements after a SPLIT between SOME members", async () => {
+    const memberGus = new Member("Gus");
+    const memberCharles = new Member("Charles");
+    const memberTeresa = new Member("Teresa");
+    const members = [memberGus, memberCharles, memberTeresa];
+    const groupId = await svc.createGroup("Awesome Group Echo", members);
+
+    const liveShowExpense = new Expense(
+      "Tickets for Taylor Swift",
+      70,
+      memberGus.id
+    );
+
+    const drinksExpense = new Expense(
+      "Drinks at the bar",
+      100,
+      memberCharles.id
+    );
+
+    await svc.recordExpense(groupId, liveShowExpense);
+    await svc.recordExpense(groupId, drinksExpense);
+
+    const group = await svc.getGroup(groupId);
+
+    const membersBalances = group.getMembersBalances([
+      memberGus.id,
+      memberCharles.id,
+    ]);
+    expect(membersBalances.length).toBe(members.length);
+
+    const gusBalance = membersBalances.find(
+      (balance) => balance.memberId === memberGus.id
+    );
+
+    // Gus should pay 15 (paid 70 and the total is 85 for the first two members).
+    expect(gusBalance?.balance).toBe(-15);
+
+    const charlesBalance = membersBalances.find(
+      (balance) => balance.memberId === memberCharles.id
+    );
+
+    // Charles is owned pay 15 (paid 100 and the total is 85 for the first two members).
+    expect(charlesBalance?.balance).toBe(15);
+
+    const teresaBalance = membersBalances.find(
+      (balance) => balance.memberId === memberTeresa.id
+    );
+
+    // Teresa won't pay anything given she is not in the split.
+    expect(teresaBalance?.balance).toBe(0);
+
+    const settleBetweenGusAndCharles = new Settlement(
+      memberGus.id,
+      memberCharles.id,
+      15
+    );
+    group.setttleDebts(settleBetweenGusAndCharles);
+
+    // TODO: Rethink this. It could cause a bug giving the settlement registration, but I need to pass the division again.
+    const updatedMembersBalances = group.getMembersBalances([
+      memberGus.id,
+      memberCharles.id,
+    ]);
+
+    const updatedGusBalance = updatedMembersBalances.find(
+      (balance) => balance.memberId === memberGus.id
+    );
+    expect(updatedGusBalance?.balance).toBe(0);
+
+    const updatedCharlesBalance = updatedMembersBalances.find(
+      (balance) => balance.memberId === memberCharles.id
+    );
+    expect(updatedCharlesBalance?.balance).toBe(0);
   });
 });

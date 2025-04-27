@@ -11,7 +11,7 @@
 ### Design Decisiom: Split Expenses After All Have Been Added
 I've experimented with a few approachs on how to add and split expenses. The one that made more sense based on the requirements, was to allow to keep adding expenses, than issue a call to get the current state of expenses split. This is automatically made when the balance is calculated, given it depends on all the current expenses and 
 
-The opposite direction was to calculate the division as each expense is being added in the app, but this seemed to be overcomplicated.
+The opposite direction was to calculate the division as each expense is being added in the app. This still seems like a interesting approach to be considered for refactor, but would add extra complexity as each expense should have a parameter to determine. Although having the parameter for split in get balances feels off.
 
 ## Project Management
 - [x] Setup Node with Typescript.
@@ -20,7 +20,8 @@ The opposite direction was to calculate the division as each expense is being ad
 - [x] Code and create the unit tests for group creation with a service layer.
 - [x] Code and create the unit tests for expenses in a group.
 - [x] Add functionality of splitting the expenses between members.
-- [ ] Create the get balance for members of the group with unit tests.
+- [x] Create the get balance for members of the group with unit tests.
+- [ ] Add settelment between members.
 - [ ] Design the overall REST API endpoints.
 - [ ] Create Postmam Collection.
 - [ ] Write E2E tests on the API.

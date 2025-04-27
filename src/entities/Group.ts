@@ -94,14 +94,25 @@ export class Group {
         0
       );
 
-      // TODO: Get each of the expenses where the member is the actual one
-      // Get all expenses to this member from ExpensesToBeSplited
-      const totalSplitForMember = 0;
+      let totalSplitForMember = 0;
+      expensesToBeSplited.forEach((e) => {
+        if (e.memberId === member.id) {
+          totalSplitForMember += e.amount;
+        }
+      });
 
-      const netBalance =
-        totalPaid -
-          expensesToBeSplited.find((e) => e.memberId === member.id)?.amount ||
-        0;
+      let netBalance = totalPaid - totalSplitForMember;
+
+      // TODO: Add settlements to the balance
+      this.setlements.forEach((s) => {
+        if (s.fromMemberId === member.id) {
+          netBalance += s.amount;
+        }
+
+        if (s.toMemberId === member.id) {
+          netBalance -= s.amount;
+        }
+      });
 
       membersBalances.push(
         new MemberBalance(member.id, member.name, netBalance)
@@ -113,6 +124,10 @@ export class Group {
 
   amountOfMembers() {
     return this.members.length;
+  }
+
+  setttleDebts(settlement: Settlement) {
+    this.setlements.push(settlement);
   }
 }
 
@@ -142,10 +157,16 @@ export class Expense {
 
 export class Settlement {
   id: string;
-  fromMemberId: number;
-  toMemberId: number;
+  fromMemberId: MemberId;
+  toMemberId: MemberId;
   amount: number;
-  date: Date;
+
+  constructor(_fromMemberId: MemberId, _toMemberId: MemberId, _amount: number) {
+    this.id = uuidv7();
+    this.fromMemberId = _fromMemberId;
+    this.toMemberId = _toMemberId;
+    this.amount = _amount;
+  }
 }
 
 export class MemberBalance {
