@@ -1,0 +1,285 @@
+{
+	"info": {
+		"_postman_id": "ab9ff754-a5e2-4ebd-8e1f-a87b655bb029",
+		"name": "payment-splitter",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9549549",
+		"_collection_link": "https://orange-sunset-456823.postman.co/workspace/Standard-Workspace~eb4854c6-d666-4af4-b708-3aa411f12fed/collection/9549549-ab9ff754-a5e2-4ebd-8e1f-a87b655bb029?action=share&source=collection_link&creator=9549549"
+	},
+	"item": [
+		{
+			"name": "Create Group",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"awesome-group-alpha\",\n    \"members\": [\n        {\n            \"name\": \"david\"\n        },\n        {\n            \"name\": \"marcos\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Group",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"awesome-group-alpha\",\n    \"members\": [\n        {\"name\": \"david\"},\n        {\"name\": \"marcos\"}\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/0196795f-8e2e-70da-ae12-d0a732492b9d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"0196795f-8e2e-70da-ae12-d0a732492b9d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Expense 1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"expense\": {\n        \"name\": \"Netflix Subscription\",\n        \"amount\": 40,\n        \"paidByMemberId\": \"01967952-5976-7605-9e9e-bd5ad0906391\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/expenses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"01967952-5977-76da-9f2c-5cc0a03b9d30",
+						"expenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Updated Group",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"awesome-group-alpha\",\n    \"members\": [\n        {\"name\": \"david\"},\n        {\"name\": \"marcos\"}\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/0196794b-d5a7-7582-8345-a80a555fb0c1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"0196794b-d5a7-7582-8345-a80a555fb0c1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Expense 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"expense\": {\n        \"name\": \"Movie Tickets\",\n        \"amount\": 60,\n        \"paidByMemberId\": \"01967952-5976-7605-9e9e-bd5ad0906391\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/expenses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"01967952-5977-76da-9f2c-5cc0a03b9d30",
+						"expenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Updated Group",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"awesome-group-alpha\",\n    \"members\": [\n        {\"name\": \"david\"},\n        {\"name\": \"marcos\"}\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/0196794b-d5a7-7582-8345-a80a555fb0c1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"0196794b-d5a7-7582-8345-a80a555fb0c1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Balances",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/balances",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"01967952-5977-76da-9f2c-5cc0a03b9d30",
+						"balances"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Settlement",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"settlement\": {\n        \"fromMemberId\": \"01967952-5977-76da-9f2c-596b3da83a3d\",\n        \"toMemberId\": \"01967952-5976-7605-9e9e-bd5ad0906391\",\n        \"amount\": 100\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/settlements",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"01967952-5977-76da-9f2c-5cc0a03b9d30",
+						"settlements"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Updated Balances",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/balances",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"01967952-5977-76da-9f2c-5cc0a03b9d30",
+						"balances"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

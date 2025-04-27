@@ -1,10 +1,16 @@
 # Peer to Peer Payment Splitter
+Creating a payment splitter for groups.
 
 ## Technologies
 - Node.js >= 21
 - Typescript
+- Jest
 
 ## Project Structure
+- Controller Layer: This is the entrypoint responsible for HTTP and CSV parsing (Primary Adapters) in Hexagonal Architecture.
+- Domain Layer: This is the core domain logic of groups.
+- Service Layer: This is the orchestration layer responsible for ensuring the valid state of group is persisted.
+- Adapters (External) Layer: This is the external adapters of our application (Secondary Adapters) in Hexagonal Architecture.
 
 ## Documentation
 
@@ -25,8 +31,14 @@ The opposite direction was to calculate the division as each expense is being ad
 - [x] Design the overall REST API endpoints.
 - [x] Add schema validation and error handling in the API layer.
 - [x] Create Postmam Collection.
+- [ ] Add CSV handling (requirement 5).
+- [ ] Consider a Event Driven Design for Email Notifications.
+- [ ] Add Email Notifications with a Fake Message Queue (Event Driven). See the impacts in the current domain mode.
 - [ ] Add a DynamoDB for persistance in AWS instead of FakeGroupRepository.
+- [ ] Add Email Notification to rely on AWS SQS.
 - [ ] The Design Decision 001 felt off in the tests and API. Consider refactoring it.
 - [ ] Write E2E tests on the API.
-- [ ] Add requirements 5 to 6 (csv and e-mail service).
+- [ ] Clean up git history.
 
+## Postman Collection
+Exported [Project Collection](./docs/payment-splitter.postman_collection.json) using Collections 2.1 from Postman.
