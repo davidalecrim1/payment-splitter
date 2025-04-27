@@ -1,11 +1,13 @@
 import { v7 as uuidv7 } from "uuid";
 
+export type MemberId = string;
+
 export class Group {
   id: string;
   name: string;
-  members: Member[];
+  private members: Member[];
   private expenses: Expense[];
-  setlements: Settlement[];
+  private setlements: Settlement[];
 
   constructor(_name: string, _members: Member[]) {
     this.id = uuidv7();
@@ -30,7 +32,7 @@ export class Group {
     // using the splitExpenses method.
   }
 
-  splitExpenses(betweenMembers: string[]): ExpenseSplit[] {
+  splitExpenses(betweenMembers: MemberId[]): ExpenseSplit[] {
     if (this.expenses.length === 0) {
       throw new Error("No expenses to split");
     }
@@ -76,58 +78,51 @@ export class Group {
     return expense;
   }
 
-  getMembersBalances(): MemberCurrentBalance[] {
-    const membersBalances: MemberCurrentBalance[] = [];
+  getMembersBalances(
+    splitExpensesBetweenMembers: MemberId[] = this.members.map((m) => m.id)
+  ): MemberBalance[] {
+    const expensesToBeSplited = this.splitExpenses(splitExpensesBetweenMembers);
+    const membersBalances: MemberBalance[] = [];
 
     for (const member of this.members) {
-      const memberBalance = new MemberCurrentBalance(
-        member.id,
-        member.name,
-        member.getBalance()
+      const paidExpenses = this.expenses.filter(
+        (e) => e.paidByMemberId === member.id
       );
 
-      membersBalances.push(memberBalance);
+      const totalPaid = paidExpenses.reduce(
+        (acc, expense) => acc + expense.amount,
+        0
+      );
+
+      // TODO: Get each of the expenses where the member is the actual one
+      // Get all expenses to this member from ExpensesToBeSplited
+      const totalSplitForMember = 0;
+
+      const netBalance =
+        totalPaid -
+          expensesToBeSplited.find((e) => e.memberId === member.id)?.amount ||
+        0;
+
+      membersBalances.push(
+        new MemberBalance(member.id, member.name, netBalance)
+      );
     }
 
     return membersBalances;
   }
 
-  getMemberBalance(memberId: string): MemberCurrentBalance {
-    const member = this.getMember(memberId);
-
-    return new MemberCurrentBalance(
-      member.id,
-      member.name,
-      member.getBalance()
-    );
+  amountOfMembers() {
+    return this.members.length;
   }
 }
 
 export class Member {
   id: string;
   name: string;
-  balance: number;
 
   constructor(_name: string) {
     this.id = uuidv7();
     this.name = _name;
-    this.balance = 0;
-  }
-
-  // The goal is to override the current balance given the splitExpenses updates
-  // all balances in every new expense added to the group.
-  // TODO: Review this design decision, if this ends up giving performance issues,
-  // refactor this to use a different approach.
-  putBalance(amount: number) {
-    this.balance = amount;
-  }
-
-  updateBalance(amount: number) {
-    this.balance += amount;
-  }
-
-  getBalance() {
-    return this.balance;
   }
 }
 
@@ -153,7 +148,7 @@ export class Settlement {
   date: Date;
 }
 
-export class MemberCurrentBalance {
+export class MemberBalance {
   memberId: string;
   balance: number;
 

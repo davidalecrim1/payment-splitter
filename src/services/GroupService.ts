@@ -1,4 +1,10 @@
-import { Expense, ExpenseSplit, Group, Member } from "../entities/Group.ts";
+import {
+  Expense,
+  Group,
+  Member,
+  MemberBalance,
+  MemberId,
+} from "../entities/Group.ts";
 import { GroupRepository } from "./GroupRepository.ts";
 
 export class GroupService {
@@ -29,14 +35,16 @@ export class GroupService {
     await this.repo.putGroup(group);
   }
 
-  async splitExpenses(
+  async getMembersBalances(
     groupId: string,
-    splitBetweenMembersIds: string[]
-  ): Promise<ExpenseSplit[]> {
+    splitExpensesBetweenMembers?: MemberId[]
+  ): Promise<MemberBalance[]> {
     const group = await this.getGroup(groupId);
-    const expenseSplits = group.splitExpenses(splitBetweenMembersIds);
-    await this.repo.putGroup(group);
-    return expenseSplits;
+    if (splitExpensesBetweenMembers === undefined) {
+      return group.getMembersBalances();
+    }
+
+    return group.getMembersBalances(splitExpensesBetweenMembers);
   }
 
   async addSettlement(

@@ -26,7 +26,7 @@ describe("Group Service", () => {
     const createdGroup = await svc.getGroup(groupId);
     expect(createdGroup).toBeDefined();
     expect(createdGroup.name).toBe(groupName);
-    expect(createdGroup.members.length).toBe(members.length);
+    expect(createdGroup.amountOfMembers()).toBe(members.length);
     expect(createdGroup.id).toBe(groupId);
   });
 
@@ -46,7 +46,7 @@ describe("Group Service", () => {
     expect(group.getAmountOfExpenses()).toBe(1);
   });
 
-  it("should split expenses between all members", async () => {
+  it("should split expenses between ALL members", async () => {
     const memberAlice = new Member("Alice");
     const memberBob = new Member("Bob");
     const memberMike = new Member("Mike");
@@ -60,24 +60,77 @@ describe("Group Service", () => {
     await svc.recordExpense(groupId, dinnerExpense);
     await svc.recordExpense(groupId, lunchExpense);
 
-    await svc.splitExpenses(groupId, [memberAlice.id, memberBob.id]);
+    const group = await svc.getGroup(groupId);
+
+    // The split of expenses is made while the balance is calculated.
+    const membersBalances = group.getMembersBalances();
+    expect(membersBalances.length).toBe(members.length);
+
+    const aliceBalance = membersBalances.find(
+      (balance) => balance.memberId === memberAlice.id
+    );
+
+    // Alice is owned 6 because she paid 40, and the division
+    // will be rounded to 34 to the first member.
+    expect(aliceBalance?.balance).toBe(6);
+
+    const bobBalance = membersBalances.find(
+      (balance) => balance.memberId === memberBob.id
+    );
+    // Bob is owned 27 because he paid 60, and the division
+    // will be rounded to 33 to the second member.
+    expect(bobBalance?.balance).toBe(27);
+
+    const mikeBalance = membersBalances.find(
+      (balance) => balance.memberId === memberMike.id
+    );
+
+    // Mike should pay 33 to the others members because he didn't pay anything.
+    expect(mikeBalance?.balance).toBe(-33);
+  });
+
+  it("should split expenses between SOME members", async () => {
+    const memberJohn = new Member("John");
+    const memberJane = new Member("Jane");
+    const memberZeke = new Member("Zeke");
+
+    const members = [memberJohn, memberJane, memberZeke];
+
+    const groupId = await svc.createGroup("Awesome Group Delta", members);
+    const breakfastExpense = new Expense("Breakfast", 70, memberJohn.id);
+    const giftshopExpense = new Expense("Gift Shop", 7, memberJane.id);
+
+    await svc.recordExpense(groupId, breakfastExpense);
+    await svc.recordExpense(groupId, giftshopExpense);
 
     const group = await svc.getGroup(groupId);
-    const expenseSplits = await svc.splitExpenses(groupId, [
-      memberAlice.id,
-      memberBob.id,
-      memberMike.id,
+
+    // The split of expenses is made while the balance is calculated.
+    const membersBalances = group.getMembersBalances([
+      memberJohn.id,
+      memberJane.id,
     ]);
+    expect(membersBalances.length).toBe(members.length);
 
-    for (let i = 0; i < expenseSplits.length; i++) {
-      const split = expenseSplits[i];
+    const johnBalance = membersBalances.find(
+      (balance) => balance.memberId === memberJohn.id
+    );
 
-      expect(split.memberId).toBe(members[i].id);
-      if (i === 0) {
-        expect(split.amount).toBe(34);
-      } else {
-        expect(split.amount).toBe(33);
-      }
-    }
+    // John is owned 31 (paid 70 and the total is 39 for the first and 38 for the second emmber).
+    expect(johnBalance?.balance).toBe(31);
+
+    const janeBalance = membersBalances.find(
+      (balance) => balance.memberId === memberJane.id
+    );
+
+    // Jane should pay 31 to John given the total 38 minus 7.
+    expect(janeBalance?.balance).toBe(-31);
+
+    const mikeBalance = membersBalances.find(
+      (balance) => balance.memberId === memberZeke.id
+    );
+
+    // Mike should pay 33 to the others members because he didn't pay anything.
+    expect(mikeBalance?.balance).toBe(0);
   });
 });
