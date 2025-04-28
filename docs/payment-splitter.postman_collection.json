@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"awesome-group-alpha\",\n    \"members\": [\n        {\n            \"name\": \"david\"\n        },\n        {\n            \"name\": \"marcos\"\n        }\n    ]\n}",
+					"raw": "{\n    \"name\": \"awesome-group-bravo\",\n    \"members\": [\n        {\n            \"name\": \"david\"\n        },\n        {\n            \"name\": \"marcos\"\n        },\n        {\n            \"name\": \"alex\"\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -53,7 +53,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/groups/01967d58-a2a3-73e3-b382-c9bfbec28e68",
+					"raw": "http://localhost:3000/groups/01967dcf-4316-7147-a421-a9335dafd6ce",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -61,7 +61,7 @@
 					"port": "3000",
 					"path": [
 						"groups",
-						"01967d58-a2a3-73e3-b382-c9bfbec28e68"
+						"01967dcf-4316-7147-a421-a9335dafd6ce"
 					]
 				}
 			},
@@ -74,7 +74,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"expense\": {\n        \"name\": \"Netflix Subscription\",\n        \"amount\": 40,\n        \"paidByMemberId\": \"01967952-5976-7605-9e9e-bd5ad0906391\"\n    }\n}",
+					"raw": "{\n    \"expense\": {\n        \"name\": \"Netflix Subscription\",\n        \"amount\": 40.5,\n        \"paidByMemberId\": \"01967dcf-4316-7147-a421-9c184d9c9de3\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -82,7 +82,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/expenses",
+					"raw": "http://localhost:3000/groups/01967dcf-4316-7147-a421-a9335dafd6ce/expenses",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -90,7 +90,7 @@
 					"port": "3000",
 					"path": [
 						"groups",
-						"01967952-5977-76da-9f2c-5cc0a03b9d30",
+						"01967dcf-4316-7147-a421-a9335dafd6ce",
 						"expenses"
 					]
 				}
@@ -104,7 +104,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"expense\": {\n        \"name\": \"Movie Tickets\",\n        \"amount\": 60,\n        \"paidByMemberId\": \"01967952-5976-7605-9e9e-bd5ad0906391\"\n    }\n}",
+					"raw": "{\n    \"expense\": {\n        \"name\": \"Movie Tickets\",\n        \"amount\": 30.25,\n        \"paidByMemberId\": \"01967dcf-4316-7147-a421-a2bb78a881e1\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -112,7 +112,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/expenses",
+					"raw": "http://localhost:3000/groups/01967dcf-4316-7147-a421-a9335dafd6ce/expenses",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -120,7 +120,7 @@
 					"port": "3000",
 					"path": [
 						"groups",
-						"01967952-5977-76da-9f2c-5cc0a03b9d30",
+						"01967dcf-4316-7147-a421-a9335dafd6ce",
 						"expenses"
 					]
 				}
@@ -193,18 +193,8 @@
 			"request": {
 				"method": "POST",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": []
-						}
-					]
-				},
 				"url": {
-					"raw": "http://localhost:3000/groups/01967d60-4fdf-72e4-bdae-784e6084121b/balances",
+					"raw": "http://localhost:3000/groups/01967dcf-4316-7147-a421-a9335dafd6ce/balances",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -212,7 +202,37 @@
 					"port": "3000",
 					"path": [
 						"groups",
-						"01967d60-4fdf-72e4-bdae-784e6084121b",
+						"01967dcf-4316-7147-a421-a9335dafd6ce",
+						"balances"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate Balances with uneven split",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"splitExpensesBetweenMembers\": [\n        \"01967dcf-4316-7147-a421-a2bb78a881e1\",\n        \"01967dcf-4316-7147-a421-a4998f78b34d\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/groups/01967dcf-4316-7147-a421-a9335dafd6ce/balances",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"groups",
+						"01967dcf-4316-7147-a421-a9335dafd6ce",
 						"balances"
 					]
 				}

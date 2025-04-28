@@ -207,4 +207,38 @@ describe("Group Service", () => {
     );
     expect(updatedCharlesBalance?.balance).toBe(0);
   });
+
+  it("should split expenses with decimal values between ALL members", async () => {
+    const memberBruno = new Member("Bruno");
+    const memberLuis = new Member("Luis");
+    const members = [memberBruno, memberLuis];
+
+    const groupId = await svc.createGroup("Awesome Group Charlie", members);
+    const netflixExpense = new Expense(
+      "Netflix Subscription",
+      40.5,
+      memberBruno.id
+    );
+    const steamExpense = new Expense(
+      "Steam Subscription",
+      30.25,
+      memberLuis.id
+    );
+
+    await svc.recordExpenses(groupId, [netflixExpense, steamExpense]);
+    const group = await svc.getGroup(groupId);
+
+    const membersBalances = group.calculateMembersBalance();
+    expect(membersBalances.length).toBe(members.length);
+
+    const brunoBalance = membersBalances.find(
+      (balance) => balance.memberId === memberBruno.id
+    );
+    expect(brunoBalance?.balance).toBe(4.75);
+
+    const luisBalance = membersBalances.find(
+      (balance) => balance.memberId === memberLuis.id
+    );
+    expect(luisBalance?.balance).toBe(-4.75);
+  });
 });

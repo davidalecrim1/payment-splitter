@@ -58,9 +58,15 @@ export class Group {
       const memberId = betweenMembers[i];
 
       let share = amountPerMember;
-      if (remainder > 0) {
+      // Add 1 per share
+      if (remainder >= 1) {
         share += 1;
         remainder -= 1;
+
+        // Add to the current the decimal value e.g. 0.25
+      } else if (remainder < 1 && remainder != 0) {
+        share += remainder;
+        remainder = 0;
       }
 
       expenseSplits.push(new ExpenseSplit(memberId, share));
