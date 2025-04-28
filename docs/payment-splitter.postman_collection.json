@@ -53,7 +53,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:3000/groups/0196795f-8e2e-70da-ae12-d0a732492b9d",
+					"raw": "http://localhost:3000/groups/01967d58-a2a3-73e3-b382-c9bfbec28e68",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -61,7 +61,7 @@
 					"port": "3000",
 					"path": [
 						"groups",
-						"0196795f-8e2e-70da-ae12-d0a732492b9d"
+						"01967d58-a2a3-73e3-b382-c9bfbec28e68"
 					]
 				}
 			},
@@ -98,38 +98,6 @@
 			"response": []
 		},
 		{
-			"name": "Get Updated Group",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"awesome-group-alpha\",\n    \"members\": [\n        {\"name\": \"david\"},\n        {\"name\": \"marcos\"}\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/groups/0196794b-d5a7-7582-8345-a80a555fb0c1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"groups",
-						"0196794b-d5a7-7582-8345-a80a555fb0c1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Add Expense 2",
 			"request": {
 				"method": "POST",
@@ -160,53 +128,22 @@
 			"response": []
 		},
 		{
-			"name": "Get Updated Group",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"awesome-group-alpha\",\n    \"members\": [\n        {\"name\": \"david\"},\n        {\"name\": \"marcos\"}\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/groups/0196794b-d5a7-7582-8345-a80a555fb0c1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"groups",
-						"0196794b-d5a7-7582-8345-a80a555fb0c1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "View Balances",
+			"name": "Batch Expenses in CSV",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "",
+							"type": "file",
+							"src": "/Users/davidalecrim/Documents/Code/payment-splitter/docs/sample-expenses-for-postman.csv"
 						}
-					}
+					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/balances",
+					"raw": "http://localhost:3000/groups/01967d47-81b1-70c9-87fa-f7d5f3ee6aa0/upload-csv",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -214,8 +151,8 @@
 					"port": "3000",
 					"path": [
 						"groups",
-						"01967952-5977-76da-9f2c-5cc0a03b9d30",
-						"balances"
+						"01967d47-81b1-70c9-87fa-f7d5f3ee6aa0",
+						"upload-csv"
 					]
 				}
 			},
@@ -252,21 +189,22 @@
 			"response": []
 		},
 		{
-			"name": "View Updated Balances",
+			"name": "Calculate Balances",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": []
 						}
-					}
+					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/groups/01967952-5977-76da-9f2c-5cc0a03b9d30/balances",
+					"raw": "http://localhost:3000/groups/01967d60-4fdf-72e4-bdae-784e6084121b/balances",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -274,7 +212,7 @@
 					"port": "3000",
 					"path": [
 						"groups",
-						"01967952-5977-76da-9f2c-5cc0a03b9d30",
+						"01967d60-4fdf-72e4-bdae-784e6084121b",
 						"balances"
 					]
 				}
