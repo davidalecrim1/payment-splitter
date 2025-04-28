@@ -1,11 +1,13 @@
+import { parse } from "csv-parse/sync";
 import type { NextFunction, Request, Response } from "express";
 import { GroupNotFoundError, MemberNotFoundError } from "../entities/Errors.ts";
 import { Expense, Group, Member, Settlement } from "../entities/Group.ts";
 import { GroupService } from "../services/GroupService.js";
 import {
   AddSettlementRequestSchema,
+  calculateMembersBalanceRequestSchema,
   CreateGroupRequestSchema,
-  GetMembersBalancesRequestSchema,
+  CsvExpensesRequest,
   RecordExpenseRequestSchema,
 } from "./schemas/Group.ts";
 
@@ -56,7 +58,7 @@ export class GroupController {
     try {
       const groupId = req.params.groupId;
       const group = await this.svc.getGroup(groupId);
-      // TODO: Should I format group to a response object?
+      // TODO: Should I format group to a response object? For now the standard format works fine.
       res.status(200).json(group);
     } catch (error) {
       if (error instanceof GroupNotFoundError) {
@@ -93,7 +95,7 @@ export class GroupController {
         parseRequest.data.expense.paidByMemberId
       );
 
-      await this.svc.recordExpense(groupId, expense);
+      await this.svc.recordExpenses(groupId, [expense]);
       res.status(200).json({ message: "Expense recorded successfully" });
     } catch (error) {
       if (
@@ -111,12 +113,14 @@ export class GroupController {
     }
   }
 
-  async getMembersBalances(
+  async calculateMembersBalance(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const parseRequest = GetMembersBalancesRequestSchema.safeParse(req.body);
+    const parseRequest = calculateMembersBalanceRequestSchema.safeParse(
+      req.body
+    );
     if (!parseRequest.success) {
       res.status(400).json({
         message: "Invalid request",
@@ -127,10 +131,11 @@ export class GroupController {
 
     try {
       const groupId = req.params.groupId;
-      const balances = await this.svc.getMembersBalances(
+      const balances = await this.svc.calculateMembersBalance(
         groupId,
         parseRequest.data.splitExpensesBetweenMembers
       );
+
       res.status(200).json(balances);
     } catch (error) {
       if (
@@ -172,6 +177,47 @@ export class GroupController {
 
       await this.svc.addSettlement(groupId, settlement);
       res.status(200).json({ message: "Settlement added successfully" });
+    } catch (error) {
+      if (
+        error instanceof GroupNotFoundError ||
+        error instanceof MemberNotFoundError
+      ) {
+        res.status(400).json({
+          message: error.message,
+        });
+        return;
+      }
+
+      console.error("Error adding settlement:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async uploadExpensesFromCsv(req: Request, res: Response, next: NextFunction) {
+    try {
+      const groupId = req.params.groupId;
+
+      if (!req.file) {
+        res.status(400).json({
+          message: "Invalid file provided",
+        });
+        return;
+      }
+
+      const csvContent = req.file.buffer.toString("utf-8");
+      const expensesReq = parse(csvContent, {
+        columns: true, // first line of CSV becomes object keys
+        skip_empty_lines: true,
+        trim: true,
+        delimiter: ";",
+      }) as CsvExpensesRequest[];
+
+      const expenses = expensesReq.map((e) => {
+        return new Expense(e.name, parseFloat(e.amount), e.paidByMemberId);
+      });
+
+      await this.svc.recordExpenses(groupId, expenses);
+      res.status(200).json({ message: "Expense recorded successfully" });
     } catch (error) {
       if (
         error instanceof GroupNotFoundError ||

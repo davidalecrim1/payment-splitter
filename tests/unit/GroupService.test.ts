@@ -40,7 +40,7 @@ describe("Group Service", () => {
     const groupId = await svc.createGroup(groupName, members);
     const dinnerExpense = new Expense("Dinner", 100, memberMike.id);
 
-    await svc.recordExpense(groupId, dinnerExpense);
+    await svc.recordExpenses(groupId, [dinnerExpense]);
 
     const group = await svc.getGroup(groupId);
     expect(group.getAmountOfExpenses()).toBe(1);
@@ -57,13 +57,12 @@ describe("Group Service", () => {
     const dinnerExpense = new Expense("Dinner", 40, memberAlice.id);
     const lunchExpense = new Expense("Lunch", 60, memberBob.id);
 
-    await svc.recordExpense(groupId, dinnerExpense);
-    await svc.recordExpense(groupId, lunchExpense);
+    await svc.recordExpenses(groupId, [dinnerExpense, lunchExpense]);
 
     const group = await svc.getGroup(groupId);
 
     // The split of expenses is made while the balance is calculated.
-    const membersBalances = group.getMembersBalances();
+    const membersBalances = group.calculateMembersBalance();
     expect(membersBalances.length).toBe(members.length);
 
     const aliceBalance = membersBalances.find(
@@ -100,13 +99,12 @@ describe("Group Service", () => {
     const breakfastExpense = new Expense("Breakfast", 70, memberJohn.id);
     const giftshopExpense = new Expense("Gift Shop", 7, memberJane.id);
 
-    await svc.recordExpense(groupId, breakfastExpense);
-    await svc.recordExpense(groupId, giftshopExpense);
+    await svc.recordExpenses(groupId, [breakfastExpense, giftshopExpense]);
 
     const group = await svc.getGroup(groupId);
 
     // The split of expenses is made while the balance is calculated.
-    const membersBalances = group.getMembersBalances([
+    const membersBalances = group.calculateMembersBalance([
       memberJohn.id,
       memberJane.id,
     ]);
@@ -153,12 +151,11 @@ describe("Group Service", () => {
       memberCharles.id
     );
 
-    await svc.recordExpense(groupId, liveShowExpense);
-    await svc.recordExpense(groupId, drinksExpense);
+    await svc.recordExpenses(groupId, [liveShowExpense, drinksExpense]);
 
     const group = await svc.getGroup(groupId);
 
-    const membersBalances = group.getMembersBalances([
+    const membersBalances = group.calculateMembersBalance([
       memberGus.id,
       memberCharles.id,
     ]);
@@ -195,7 +192,7 @@ describe("Group Service", () => {
     const updatedGroup = await svc.getGroup(groupId);
 
     // TODO: Rethink this. It could cause a bug giving the settlement registration, but I need to pass the division again.
-    const updatedMembersBalances = updatedGroup.getMembersBalances([
+    const updatedMembersBalances = updatedGroup.calculateMembersBalance([
       memberGus.id,
       memberCharles.id,
     ]);

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MemberId } from "../../entities/Group.ts";
 
 export const CreateGroupRequestSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -24,7 +25,7 @@ export const RecordExpenseRequestSchema = z.object({
   }),
 });
 
-export const GetMembersBalancesRequestSchema = z.object({
+export const calculateMembersBalanceRequestSchema = z.object({
   splitExpensesBetweenMembers: z.array(z.string()).optional().default([]),
 });
 
@@ -35,3 +36,9 @@ export const AddSettlementRequestSchema = z.object({
     amount: z.number().positive("Amount must be positive"),
   }),
 });
+
+export interface CsvExpensesRequest {
+  name: string;
+  amount: string;
+  paidByMemberId: MemberId;
+}

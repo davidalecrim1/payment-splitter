@@ -34,7 +34,9 @@ export class Group {
     // using the splitExpenses method.
   }
 
-  splitExpenses(betweenMembers: MemberId[]): ExpenseSplit[] {
+  splitExpenses(
+    betweenMembers: MemberId[] = this.members.map((m) => m.id)
+  ): ExpenseSplit[] {
     if (this.expenses.length === 0) {
       throw new Error("No expenses to split");
     }
@@ -80,7 +82,7 @@ export class Group {
     return expense;
   }
 
-  getMembersBalances(
+  calculateMembersBalance(
     splitExpensesBetweenMembers?: MemberId[]
   ): MemberBalance[] {
     const expensesToBeSplited = this.splitExpenses(splitExpensesBetweenMembers);

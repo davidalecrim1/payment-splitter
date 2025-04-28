@@ -31,18 +31,20 @@ export class GroupService {
     return group;
   }
 
-  async recordExpense(groupId: string, expense: Expense): Promise<void> {
+  async recordExpenses(groupId: string, expenses: Expense[]): Promise<void> {
     const group = await this.getGroup(groupId);
-    group.addExpense(expense);
+    for (const expense of expenses) {
+      group.addExpense(expense);
+    }
     await this.repo.putGroup(group);
   }
 
-  async getMembersBalances(
+  async calculateMembersBalance(
     groupId: string,
     splitExpensesBetweenMembers?: MemberId[]
   ): Promise<MemberBalance[]> {
     const group = await this.getGroup(groupId);
-    return group.getMembersBalances(splitExpensesBetweenMembers);
+    return group.calculateMembersBalance(splitExpensesBetweenMembers);
   }
 
   async addSettlement(groupId: string, settlement: Settlement): Promise<void> {
