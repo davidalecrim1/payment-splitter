@@ -22,6 +22,11 @@ The opposite direction was to calculate the division as each expense is being ad
 ### Design Decision 002: CSV Uploading
 I'm considering the CSV files won't be too large to process. If they were, I would consider an API to store the file in S3, which could trigger an event to a queue to process the file in a distributed system. To keep things simple, I will consider the same API endpoint to upload the file is responsible for processing it in the HTTP connection. If it was too large, I could evolve the application to the second approach mentioned before.
 
+### Design Decision 003: Email Service
+I'm considering the email service could be distributed in another application, and the responsability of payment splitter is to sent the event an SQS, where the other service would be listening for the exected ones.
+
+This could also be constrained within this application with multiple handlers to react on events on a message bus. This design would not be scalable as the system would grow.
+
 ## Project Management Tasks
 - [x] Setup Node with Typescript in VS Code.
 - [x] Setup Jest with Typescript in VS Code.
@@ -39,9 +44,9 @@ I'm considering the CSV files won't be too large to process. If they were, I wou
 - [x] Write E2E tests on the API using Jest.
 - [ ] Consider a Event Driven Design for Email Notifications.
 - [ ] Add Email Notifications with a Fake Message Queue (Event Driven). See the impacts in the current domain mode.
-- [ ] Make the unit and E2E testsmore reusable and apply refactor techniques in them.
+- [ ] Make the unit and E2E tests more reusable and apply refactor techniques in them.
 - [ ] Add a DynamoDB for persistance in AWS instead of FakeGroupRepository.
-- [ ] Add Email Notification to rely on AWS SQS.
+- [ ] Add Email Notification to rely on AWS SQS. Create a thin Email Service system.
 - [ ] Add CSV processing to rely on Amazon S3 for storage (API for upload and processing).
 - [ ] Clean up git history.
 
