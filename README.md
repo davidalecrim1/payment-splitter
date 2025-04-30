@@ -49,6 +49,7 @@ This could also be constrained within this application with multiple handlers to
 - [ ] Add a DynamoDB for persistance in AWS instead of FakeGroupRepository.
 - [ ] Add Email Notification to rely on AWS SQS. Create a thin Email Service system.
 - [ ] Add CSV processing to rely on Amazon S3 for storage (API for upload and processing).
+- [ ] Consider a feature to add currency (BRL, USD, etc)
 - [ ] Clean up git history.
 
 ## Postman Collection
