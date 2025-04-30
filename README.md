@@ -36,13 +36,13 @@ I'm considering the CSV files won't be too large to process. If they were, I wou
 - [x] Create Postmam Collection.
 - [x] Add CSV upload and processing in the API (requirement 5).
 - [x] Fix the bug of float values in the expenses when calculate the balance.
+- [x] Write E2E tests on the API using Jest.
 - [ ] Consider a Event Driven Design for Email Notifications.
 - [ ] Add Email Notifications with a Fake Message Queue (Event Driven). See the impacts in the current domain mode.
-- [ ] Make the unit tests more reusable and apply refactor techniques in them.
+- [ ] Make the unit and E2E testsmore reusable and apply refactor techniques in them.
 - [ ] Add a DynamoDB for persistance in AWS instead of FakeGroupRepository.
 - [ ] Add Email Notification to rely on AWS SQS.
 - [ ] Add CSV processing to rely on Amazon S3 for storage (API for upload and processing).
-- [x] Write E2E tests on the API using Jest.
 - [ ] Clean up git history.
 
 ## Postman Collection
