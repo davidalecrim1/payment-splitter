@@ -8,12 +8,15 @@ import { GroupService } from "../services/GroupService.ts";
 
 const router = Router();
 
-let groupRepository: GroupRepository = null;
+let groupRepository: GroupRepository;
+
 if (process.env.MOCK_DATABASE === "false") {
   // TODO: Add DynamoDB.
+  throw new Error("DynamoDB implementation is not yet available.");
 } else {
   groupRepository = new FakeGroupRepository();
 }
+
 const groupService = new GroupService(groupRepository);
 const groupController = new GroupController(groupService);
 

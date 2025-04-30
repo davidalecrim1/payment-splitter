@@ -1,7 +1,7 @@
 import { parse } from "csv-parse/sync";
 import type { NextFunction, Request, Response } from "express";
 import { GroupNotFoundError, MemberNotFoundError } from "../entities/Errors.ts";
-import { Expense, Group, Member, Settlement } from "../entities/Group.ts";
+import { Expense, Member, Settlement } from "../entities/Group.ts";
 import { GroupService } from "../services/GroupService.js";
 import {
   AddSettlementRequestSchema,
@@ -54,7 +54,7 @@ export class GroupController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Group | void> {
+  ): Promise<void> {
     try {
       const groupId = req.params.groupId;
       const group = await this.svc.getGroup(groupId);
