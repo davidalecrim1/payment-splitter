@@ -4,8 +4,7 @@ import { MessageQueue } from "../services/MessageQueue.ts";
 export class FakeMessageQueue implements MessageQueue {
   messages: DomainEvent[] = [];
 
-  Publish(event: DomainEvent): Promise<void> {
+  async Publish(event: DomainEvent): Promise<void> {
     this.messages.push(event);
-    return Promise.resolve();
   }
 }

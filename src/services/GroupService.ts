@@ -41,7 +41,10 @@ export class GroupService {
       group.addExpense(expense);
     }
     await this.repo.putGroup(group);
-    await this.mq.Publish(new ExpenseRecorded());
+
+    for (const expense of expenses) {
+      await this.mq.Publish(new ExpenseRecorded(groupId, expense));
+    }
   }
 
   async calculateMembersBalance(
@@ -56,6 +59,6 @@ export class GroupService {
     const group = await this.getGroup(groupId);
     group.setttleDebts(settlement);
     await this.repo.putGroup(group);
-    await this.mq.Publish(new DebtSettled());
+    await this.mq.Publish(new DebtSettled(groupId, settlement));
   }
 }

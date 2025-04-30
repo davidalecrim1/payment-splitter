@@ -3,12 +3,11 @@ import { FakeMessageQueue } from "../../src/adapters/FakeMessageQueue.ts";
 import { Expense, Member, Settlement } from "../../src/entities/Group.ts";
 import { GroupRepository } from "../../src/services/GroupRepository.ts";
 import { GroupService } from "../../src/services/GroupService.ts";
-import { MessageQueue } from "../../src/services/MessageQueue.ts";
 
 describe("Group Service", () => {
   let repo: GroupRepository;
   let svc: GroupService;
-  let mq: MessageQueue;
+  let mq: FakeMessageQueue;
 
   beforeEach(() => {
     repo = new FakeGroupRepository();
@@ -34,7 +33,7 @@ describe("Group Service", () => {
     expect(createdGroup.id).toBe(groupId);
   });
 
-  it("should record an expense in a group", async () => {
+  it("should record an expense in a group with an event in the queue", async () => {
     const groupName = "Awesome Group Bravo";
     const memberMike = new Member("Mike");
     const memberJohn = new Member("John");
@@ -48,6 +47,7 @@ describe("Group Service", () => {
 
     const group = await svc.getGroup(groupId);
     expect(group.getAmountOfExpenses()).toBe(1);
+    expect(mq.messages.pop()?.type).toBe("ExpenseRecorded");
   });
 
   it("should split expenses between ALL members", async () => {
@@ -192,7 +192,9 @@ describe("Group Service", () => {
       15
     );
 
-    svc.addSettlement(groupId, settleBetweenGusAndCharles);
+    await svc.addSettlement(groupId, settleBetweenGusAndCharles);
+    expect(mq.messages.pop()?.type).toBe("DebtSettled");
+
     const updatedGroup = await svc.getGroup(groupId);
 
     // TODO: Rethink this. It could cause a bug giving the settlement registration, but I need to pass the division again.
