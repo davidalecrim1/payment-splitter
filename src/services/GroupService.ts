@@ -1,4 +1,5 @@
 import { GroupNotFoundError } from "../entities/Errors.ts";
+import { DebtSettled, ExpenseRecorded } from "../entities/Events.ts";
 import {
   Expense,
   Group,
@@ -8,12 +9,15 @@ import {
   Settlement,
 } from "../entities/Group.ts";
 import { GroupRepository } from "./GroupRepository.ts";
+import { MessageQueue } from "./MessageQueue.ts";
 
 export class GroupService {
   private repo: GroupRepository;
+  private mq: MessageQueue;
 
-  constructor(_repo: GroupRepository) {
+  constructor(_repo: GroupRepository, _mq: MessageQueue) {
     this.repo = _repo;
+    this.mq = _mq;
   }
 
   async createGroup(name: string, members: Member[]): Promise<string> {
@@ -37,6 +41,7 @@ export class GroupService {
       group.addExpense(expense);
     }
     await this.repo.putGroup(group);
+    await this.mq.Publish(new ExpenseRecorded());
   }
 
   async calculateMembersBalance(
@@ -51,5 +56,6 @@ export class GroupService {
     const group = await this.getGroup(groupId);
     group.setttleDebts(settlement);
     await this.repo.putGroup(group);
+    await this.mq.Publish(new DebtSettled());
   }
 }

@@ -1,10 +1,12 @@
 import { Router } from "express";
 import multer from "multer";
 import { FakeGroupRepository } from "../adapters/FakeGroupRepository.ts";
+import { FakeMessageQueue } from "../adapters/FakeMessageQueue.ts";
 import { GroupController } from "../controller/GroupController.ts";
 import { validateGroupIdParam } from "../controller/middleware/Group.ts";
 import { GroupRepository } from "../services/GroupRepository.ts";
 import { GroupService } from "../services/GroupService.ts";
+import { MessageQueue } from "../services/MessageQueue.ts";
 
 const router = Router();
 
@@ -17,7 +19,15 @@ if (process.env.MOCK_DATABASE === "false") {
   groupRepository = new FakeGroupRepository();
 }
 
-const groupService = new GroupService(groupRepository);
+let messageQueue: MessageQueue;
+if (process.env.MOCK_MESSAGE_QUEUE === "false") {
+  // TODO: Add SQS.
+  throw new Error("SQS implementation is not yet available.");
+} else {
+  messageQueue = new FakeMessageQueue();
+}
+
+const groupService = new GroupService(groupRepository, messageQueue);
 const groupController = new GroupController(groupService);
 
 router.post("/", groupController.createGroup.bind(groupController));

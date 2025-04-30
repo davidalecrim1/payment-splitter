@@ -1,15 +1,19 @@
 import { FakeGroupRepository } from "../../src/adapters/FakeGroupRepository.ts";
+import { FakeMessageQueue } from "../../src/adapters/FakeMessageQueue.ts";
 import { Expense, Member, Settlement } from "../../src/entities/Group.ts";
 import { GroupRepository } from "../../src/services/GroupRepository.ts";
 import { GroupService } from "../../src/services/GroupService.ts";
+import { MessageQueue } from "../../src/services/MessageQueue.ts";
 
 describe("Group Service", () => {
   let repo: GroupRepository;
   let svc: GroupService;
+  let mq: MessageQueue;
 
   beforeEach(() => {
     repo = new FakeGroupRepository();
-    svc = new GroupService(repo);
+    mq = new FakeMessageQueue();
+    svc = new GroupService(repo, mq);
   });
 
   it("should create and retrieve a group", async () => {
