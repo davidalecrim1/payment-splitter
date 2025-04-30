@@ -1,10 +1,10 @@
 import { Router } from "express";
 import multer from "multer";
 import { FakeGroupRepository } from "../adapters/FakeGroupRepository.ts";
-import { GroupController } from "../controller/GroupController.js";
+import { GroupController } from "../controller/GroupController.ts";
 import { validateGroupIdParam } from "../controller/middleware/Group.ts";
 import { GroupRepository } from "../services/GroupRepository.ts";
-import { GroupService } from "../services/GroupService.js";
+import { GroupService } from "../services/GroupService.ts";
 
 const router = Router();
 
