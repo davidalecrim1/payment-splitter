@@ -1,5 +1,10 @@
+import { v7 as uuidv7 } from "uuid";
 import { FakeGroupRepository } from "../../src/adapters/FakeGroupRepository.ts";
 import { FakeMessageQueue } from "../../src/adapters/FakeMessageQueue.ts";
+import {
+  GroupNotFoundError,
+  MemberNotFoundError,
+} from "../../src/entities/Errors.ts";
 import { Expense, Member, Settlement } from "../../src/entities/Group.ts";
 import { GroupRepository } from "../../src/services/GroupRepository.ts";
 import { GroupService } from "../../src/services/GroupService.ts";
@@ -31,6 +36,23 @@ describe("Group Service", () => {
     expect(createdGroup.name).toBe(groupName);
     expect(createdGroup.amountOfMembers()).toBe(members.length);
     expect(createdGroup.id).toBe(groupId);
+  });
+
+  it("shouldn't be able to retrieve an unexisting group", async () => {
+    const id = uuidv7();
+    await expect(svc.getGroup(id)).rejects.toThrow(GroupNotFoundError);
+  });
+
+  it("shouldn't find an unexisting member", async () => {
+    const id = await svc.createGroup("Awesome Group Xray", [
+      new Member("Alice"),
+    ]);
+
+    const group = await svc.getGroup(id);
+    const unexistingMemberId = uuidv7();
+    expect(() => group.getMember(unexistingMemberId)).toThrow(
+      MemberNotFoundError
+    );
   });
 
   it("should record an expense in a group with an event in the queue", async () => {
