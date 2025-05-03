@@ -3,6 +3,7 @@
     "module": "NodeNext",         
     "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
+     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "target": "ES2022",
     "outDir": "dist",

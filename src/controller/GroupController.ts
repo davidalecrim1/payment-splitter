@@ -58,7 +58,8 @@ export class GroupController {
     try {
       const groupId = req.params.groupId;
       const group = await this.svc.getGroup(groupId);
-      // TODO: Should I format group to a response object? For now the standard format works fine.
+      // TODO: Should I format group to a response object?
+      // For now the standard format works fine.
       res.status(200).json(group);
     } catch (error) {
       if (error instanceof GroupNotFoundError) {
