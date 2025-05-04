@@ -5,7 +5,12 @@ import {
   GroupNotFoundError,
   MemberNotFoundError,
 } from "../../src/entities/Errors.ts";
-import { Expense, Member, Settlement } from "../../src/entities/Group.ts";
+import {
+  Expense,
+  Member,
+  Money,
+  Settlement,
+} from "../../src/entities/Group.ts";
 import { GroupRepository } from "../../src/services/GroupRepository.ts";
 import { GroupService } from "../../src/services/GroupService.ts";
 
@@ -60,11 +65,11 @@ describe("Group Service", () => {
     const groupId = await svc.createGroup("Awesome Group Bravo", members);
 
     await svc.recordExpenses(groupId, [
-      new Expense("Dinner", 100, members[0].id),
+      new Expense("Dinner", new Money("USD", 100), members[0].id),
     ]);
 
     const group = await svc.getGroup(groupId);
-    expect(group.getAmountOfExpenses()).toBe(1);
+    expect(group.getLengthOfExpenses()).toBe(1);
 
     expect(mq.messages.pop()?.type).toBe("ExpenseRecorded");
   });
@@ -78,8 +83,8 @@ describe("Group Service", () => {
     const groupId = await svc.createGroup("Awesome Group Charlie", members);
 
     await svc.recordExpenses(groupId, [
-      new Expense("Dinner", 40, members[0].id),
-      new Expense("Lunch", 60, members[1].id),
+      new Expense("Dinner", new Money("USD", 40), members[0].id),
+      new Expense("Lunch", new Money("USD", 60), members[1].id),
     ]);
 
     const group = await svc.getGroup(groupId);
@@ -91,16 +96,16 @@ describe("Group Service", () => {
     // Alice is owned 6 because she paid 40, and the division
     // will be rounded to 34 to the first member.
     expect(membersBalances[0].memberId).toEqual(members[0].id);
-    expect(membersBalances[0].balance).toBe(6);
+    expect(membersBalances[0].balance[0].amount).toBe(6);
 
     // Bob is owned 27 because he paid 60, and the division
     // will be rounded to 33 to the second member.
     expect(membersBalances[1].memberId).toEqual(members[1].id);
-    expect(membersBalances[1].balance).toBe(27);
+    expect(membersBalances[1].balance[0].amount).toBe(27);
 
     // Mike should pay 33 to the others members because he didn't pay anything.
     expect(membersBalances[2].memberId).toEqual(members[2].id);
-    expect(membersBalances[2].balance).toBe(-33);
+    expect(membersBalances[2].balance[0].amount).toBe(-33);
   });
 
   it("should split expenses between SOME members", async () => {
@@ -112,8 +117,8 @@ describe("Group Service", () => {
     const groupId = await svc.createGroup("Awesome Group Delta", members);
 
     await svc.recordExpenses(groupId, [
-      new Expense("Breakfast", 70, members[0].id),
-      new Expense("Gift Shop", 7, members[1].id),
+      new Expense("Breakfast", new Money("USD", 70), members[0].id),
+      new Expense("Gift Shop", new Money("USD", 7), members[1].id),
     ]);
 
     const group = await svc.getGroup(groupId);
@@ -126,15 +131,15 @@ describe("Group Service", () => {
     expect(membersBalances.length).toBe(members.length);
 
     // John is owned 31 (paid 70 and the total is 39 for the first and 38 for the second emmber).
-    expect(membersBalances[0].balance).toBe(31);
+    expect(membersBalances[0].balance[0].amount).toBe(31);
     expect(membersBalances[0].memberId).toEqual(members[0].id);
 
     // Jane should pay 31 to John given the total 38 minus 7.
-    expect(membersBalances[1].balance).toBe(-31);
+    expect(membersBalances[1].balance[0].amount).toBe(-31);
     expect(membersBalances[1].memberId).toEqual(members[1].id);
 
     // Zeke won't pay anything given he is not in the split.
-    expect(membersBalances[2].balance).toBe(0);
+    expect(membersBalances[2].balance[0].amount).toBe(0);
     expect(membersBalances[2].memberId).toEqual(members[2].id);
   });
 
@@ -147,8 +152,12 @@ describe("Group Service", () => {
     const groupId = await svc.createGroup("Awesome Group Echo", members);
 
     await svc.recordExpenses(groupId, [
-      new Expense("Tickets for Taylor Swift", 70, members[0].id),
-      new Expense("Drinks at the bar", 100, members[1].id),
+      new Expense(
+        "Tickets for Taylor Swift",
+        new Money("USD", 70),
+        members[0].id
+      ),
+      new Expense("Drinks at the bar", new Money("USD", 100), members[1].id),
     ]);
 
     const group = await svc.getGroup(groupId);
@@ -160,20 +169,20 @@ describe("Group Service", () => {
     expect(membersBalances.length).toBe(members.length);
 
     // Gus should pay 15 (paid 70 and the total is 85 for the first two members).
-    expect(membersBalances[0].balance).toBe(-15);
+    expect(membersBalances[0].balance[0].amount).toBe(-15);
     expect(membersBalances[0].memberId).toEqual(members[0].id);
 
     // Charles is owned pay 15 (paid 100 and the total is 85 for the first two members).
-    expect(membersBalances[1].balance).toBe(15);
+    expect(membersBalances[1].balance[0].amount).toBe(15);
     expect(membersBalances[1].memberId).toEqual(members[1].id);
 
     // Teresa won't pay anything given she is not in the split.
-    expect(membersBalances[2].balance).toBe(0);
+    expect(membersBalances[2].balance[0].amount).toBe(0);
     expect(membersBalances[2].memberId).toEqual(members[2].id);
 
     await svc.addSettlement(
       groupId,
-      new Settlement(members[0].id, members[1].id, 15)
+      new Settlement(members[0].id, members[1].id, new Money("USD", 15))
     );
 
     expect(mq.messages.pop()?.type).toBe("DebtSettled");
@@ -187,7 +196,7 @@ describe("Group Service", () => {
     ]);
 
     updatedMembersBalances.map((mb, i) => {
-      expect(mb.balance).toBe(0);
+      expect(mb.balance[0].amount).toBe(0);
       expect(mb.memberId).toEqual(members[i].id);
     });
   });
@@ -197,8 +206,12 @@ describe("Group Service", () => {
     const groupId = await svc.createGroup("Awesome Group Charlie", members);
 
     await svc.recordExpenses(groupId, [
-      new Expense("Netflix Subscription", 40.5, members[0].id),
-      new Expense("Steam Subscription", 30.25, members[1].id),
+      new Expense(
+        "Netflix Subscription",
+        new Money("USD", 40.5),
+        members[0].id
+      ),
+      new Expense("Steam Subscription", new Money("USD", 30.25), members[1].id),
     ]);
 
     const group = await svc.getGroup(groupId);
@@ -206,10 +219,12 @@ describe("Group Service", () => {
     const membersBalances = group.calculateMembersBalance();
     expect(membersBalances.length).toBe(members.length);
 
-    expect(membersBalances[0].balance).toBe(4.75);
+    expect(membersBalances[0].balance[0].amount).toBe(4.75);
     expect(membersBalances[0].memberId).toEqual(members[0].id);
 
-    expect(membersBalances[1].balance).toBe(-4.75);
+    expect(membersBalances[1].balance[0].amount).toBe(-4.75);
     expect(membersBalances[1].memberId).toEqual(members[1].id);
   });
+
+  // TODO: Add tests for more than one currency
 });

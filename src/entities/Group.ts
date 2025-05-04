@@ -45,37 +45,59 @@ export class Group {
       betweenMembers = this.members.map((m) => m.id);
     }
 
-    const totalAmount = this.expenses.reduce(
-      (acc, expense) => acc + expense.amount,
-      0
-    );
-
-    const amountPerMember = Math.floor(totalAmount / betweenMembers.length);
-    let remainder = totalAmount % betweenMembers.length;
-
-    const expenseSplits: ExpenseSplit[] = [];
-    for (let i = 0; i < betweenMembers.length; i++) {
-      const memberId = betweenMembers[i];
-
-      let share = amountPerMember;
-      // Add 1 per share
-      if (remainder >= 1) {
-        share += 1;
-        remainder -= 1;
-
-        // Add to the current the decimal value e.g. 0.25
-      } else if (remainder < 1 && remainder != 0) {
-        share += remainder;
-        remainder = 0;
-      }
-
-      expenseSplits.push(new ExpenseSplit(memberId, share));
+    const splitMap = new Map<MemberId, ExpenseSplit>();
+    for (const memberId of betweenMembers) {
+      splitMap.set(memberId, new ExpenseSplit(memberId, []));
     }
 
-    return expenseSplits;
+    for (const code of this.getCurrenciesInExpenses()) {
+      const amount = this.getTotalAmountOfExpensesForCurrency(code);
+      const amountPerMember = Math.floor(amount / betweenMembers.length);
+      let remainder = amount % betweenMembers.length;
+
+      for (const memberId of betweenMembers) {
+        let share = amountPerMember;
+
+        if (remainder >= 1) {
+          share += 1;
+          remainder -= 1;
+        } else if (remainder < 1 && remainder !== 0) {
+          share += remainder;
+          remainder = 0;
+        }
+
+        const split = splitMap.get(memberId);
+        if (!split) {
+          throw new Error(`Member ${memberId} not found in splitMap`);
+        }
+
+        split.currency.push(new Money(code, share));
+      }
+    }
+
+    return Array.from(splitMap.values());
   }
 
-  getAmountOfExpenses() {
+  private getCurrenciesInExpenses(): string[] {
+    let codes = new Set<string>();
+    for (const expense of this.expenses) {
+      codes.add(expense.currency.code);
+    }
+
+    return Array.from(codes);
+  }
+
+  private getTotalAmountOfExpensesForCurrency(currencyCode: string) {
+    return this.expenses.reduce((acc, expense) => {
+      if (expense.currency.code == currencyCode) {
+        return acc + expense.currency.amount;
+      } else {
+        return acc;
+      }
+    }, 0);
+  }
+
+  getLengthOfExpenses() {
     return this.expenses.length;
   }
 
@@ -95,41 +117,62 @@ export class Group {
     const membersBalances: MemberBalance[] = [];
 
     for (const member of this.members) {
-      const paidExpenses = this.expenses.filter(
-        (e) => e.paidByMemberId === member.id
-      );
+      let netBalances: Money[] = [];
+      for (const code of this.getCurrenciesInExpenses()) {
+        const totalPaid = this.getTotalPaidForMember(code, member);
+        const totalSplit = this.getTotalSplitForMember(
+          code,
+          member,
+          expensesToBeSplited
+        );
 
-      const totalPaid = paidExpenses.reduce(
-        (acc, expense) => acc + expense.amount,
-        0
-      );
+        let netBalance = totalPaid - totalSplit;
+        this.setlements.forEach((s) => {
+          if (s.fromMemberId === member.id && s.currency.code === code) {
+            netBalance += s.currency.amount;
+          }
 
-      let totalSplitForMember = 0;
-      expensesToBeSplited.forEach((e) => {
-        if (e.memberId === member.id) {
-          totalSplitForMember += e.amount;
-        }
-      });
+          if (s.toMemberId === member.id) {
+            netBalance -= s.currency.amount;
+          }
+        });
 
-      let netBalance = totalPaid - totalSplitForMember;
-
-      // TODO: Add settlements to the balance
-      this.setlements.forEach((s) => {
-        if (s.fromMemberId === member.id) {
-          netBalance += s.amount;
-        }
-
-        if (s.toMemberId === member.id) {
-          netBalance -= s.amount;
-        }
-      });
+        netBalances.push(new Money(code, netBalance));
+      }
 
       membersBalances.push(
-        new MemberBalance(member.id, member.name, netBalance)
+        new MemberBalance(member.id, member.name, netBalances)
       );
     }
 
     return membersBalances;
+  }
+
+  private getTotalPaidForMember(currencyCode: string, member: Member): number {
+    const targetCode = currencyCode.toUpperCase();
+
+    return this.expenses
+      .filter((e) => e.paidByMemberId === member.id)
+      .filter((e) => e.currency.code.toUpperCase() === targetCode)
+      .reduce((acc, e) => acc + e.currency.amount, 0);
+  }
+
+  private getTotalSplitForMember(
+    currencyCode: string,
+    member: Member,
+    expensesToBeSplited: ExpenseSplit[]
+  ): number {
+    return expensesToBeSplited.reduce((total, split) => {
+      if (split.memberId !== member.id) {
+        return total;
+      }
+
+      const sumForCode = split.currency.reduce((sum, c) => {
+        return c.code === currencyCode ? sum + c.amount : sum;
+      }, 0);
+
+      return total + sumForCode;
+    }, 0);
   }
 
   amountOfMembers() {
@@ -160,13 +203,13 @@ export class Member {
 export class Expense {
   id: string;
   name: string;
-  amount: number;
+  currency: Money;
   paidByMemberId: string;
 
-  constructor(_name: string, _amount: number, _paidByMemberId: string) {
+  constructor(_name: string, _currency: Money, _paidByMemberId: string) {
     this.id = uuidv7();
     this.name = _name;
-    this.amount = _amount;
+    this.currency = _currency;
     this.paidByMemberId = _paidByMemberId;
   }
 }
@@ -175,21 +218,25 @@ export class Settlement {
   id: string;
   fromMemberId: MemberId;
   toMemberId: MemberId;
-  amount: number;
+  currency: Money;
 
-  constructor(_fromMemberId: MemberId, _toMemberId: MemberId, _amount: number) {
+  constructor(
+    _fromMemberId: MemberId,
+    _toMemberId: MemberId,
+    _currency: Money
+  ) {
     this.id = uuidv7();
     this.fromMemberId = _fromMemberId;
     this.toMemberId = _toMemberId;
-    this.amount = _amount;
+    this.currency = _currency;
   }
 }
 
 export class MemberBalance {
   memberId: string;
-  balance: number;
+  balance: Money[];
 
-  constructor(_memberId: string, _name: string, _balance: number) {
+  constructor(_memberId: string, _name: string, _balance: Money[]) {
     this.memberId = _memberId;
     this.balance = _balance;
   }
@@ -197,10 +244,20 @@ export class MemberBalance {
 
 export class ExpenseSplit {
   memberId: string;
-  amount: number;
+  currency: Money[];
 
-  constructor(_memberId: string, _amount: number) {
+  constructor(_memberId: string, _currency: Money[]) {
     this.memberId = _memberId;
+    this.currency = _currency;
+  }
+}
+
+export class Money {
+  readonly code: string;
+  readonly amount: number;
+
+  constructor(_code: string, _amount: number) {
+    this.code = _code;
     this.amount = _amount;
   }
 }
