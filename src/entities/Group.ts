@@ -132,7 +132,7 @@ export class Group {
             netBalance += s.currency.amount;
           }
 
-          if (s.toMemberId === member.id) {
+          if (s.toMemberId === member.id && s.currency.code === code) {
             netBalance -= s.currency.amount;
           }
         });

@@ -226,5 +226,69 @@ describe("Group Service", () => {
     expect(membersBalances[1].memberId).toEqual(members[1].id);
   });
 
-  // TODO: Add tests for more than one currency
+  it("should allow multiple currencies in a group with balances splitted by currency", async () => {
+    const members = [new Member("David"), new Member("John")];
+    const groupId = await svc.createGroup("Awesome Group Fox", members);
+
+    await svc.recordExpenses(groupId, [
+      new Expense(
+        "Ice Cream at the Mall",
+        new Money("USD", 40.5),
+        members[0].id
+      ),
+      new Expense(
+        "Shopping at Aliexpress",
+        new Money("BRL", 1000),
+        members[1].id
+      ),
+      new Expense("Parking Lot", new Money("USD", 30.25), members[1].id),
+    ]);
+
+    const group = await svc.getGroup(groupId);
+
+    const membersBalances = group.calculateMembersBalance();
+    expect(membersBalances.length).toBe(members.length);
+
+    expect(membersBalances[0].memberId).toEqual(members[0].id);
+    expect(membersBalances[0].balance[0].code).toBe("USD");
+    expect(membersBalances[0].balance[0].amount).toBe(4.75);
+    expect(membersBalances[0].balance[1].code).toBe("BRL");
+    expect(membersBalances[0].balance[1].amount).toBe(-500);
+
+    expect(membersBalances[1].memberId).toEqual(members[1].id);
+    expect(membersBalances[1].balance[0].code).toBe("USD");
+    expect(membersBalances[1].balance[0].amount).toBe(-4.75);
+    expect(membersBalances[1].balance[1].code).toBe("BRL");
+    expect(membersBalances[1].balance[1].amount).toBe(500);
+
+    await svc.addSettlement(
+      groupId,
+      new Settlement(members[1].id, members[0].id, new Money("USD", 4.75))
+    );
+
+    await svc.addSettlement(
+      groupId,
+      new Settlement(members[0].id, members[1].id, new Money("BRL", 500))
+    );
+
+    const updatedGroup = await svc.getGroup(groupId);
+
+    const updatedMembersBalances = updatedGroup.calculateMembersBalance();
+    expect(updatedMembersBalances.length).toBe(members.length);
+
+    expect(updatedMembersBalances[0].memberId).toEqual(members[0].id);
+    expect(updatedMembersBalances[0].balance[0].code).toBe("USD");
+    expect(updatedMembersBalances[0].balance[0].amount).toBe(0);
+    expect(updatedMembersBalances[0].balance[1].code).toBe("BRL");
+    expect(updatedMembersBalances[0].balance[1].amount).toBe(0);
+
+    expect(updatedMembersBalances[1].memberId).toEqual(members[1].id);
+    expect(updatedMembersBalances[1].balance[0].code).toBe("USD");
+    expect(updatedMembersBalances[1].balance[0].amount).toBe(0);
+    expect(updatedMembersBalances[1].balance[1].code).toBe("BRL");
+    expect(updatedMembersBalances[1].balance[1].amount).toBe(0);
+  });
+
+  // TODO: Evolve E2E tests for this new feature.
+  // TODO: Update Postman Collection.
 });
