@@ -1,4 +1,4 @@
-import { Member } from "../../src/entities/Group.ts";
+import { Member, Money } from "../../src/entities/Group.ts";
 import {
   addSettlement,
   calculateBalances,
@@ -19,29 +19,55 @@ describe("Payment Splitter E2E", () => {
     const groupRes = await getGroup(groupId);
     const members = groupRes.members as Member[];
 
-    await createExpense(groupId, members[0].id, "Netflix Subscription", 40.5);
+    await createExpense(
+      groupId,
+      members[0].id,
+      "Netflix Subscription",
+      new Money("USD", 40.5)
+    );
 
     const memberBalances = await calculateBalances(groupId);
     expect(memberBalances.length).toBe(3);
 
-    expect(memberBalances[0].balance).toBe(26.5);
-    expect(memberBalances[1].balance).toBe(-13.5);
-    expect(memberBalances[2].balance).toBe(-13);
+    expect(memberBalances[0].balance[0].code).toBe("USD");
+    expect(memberBalances[0].balance[0].amount).toBe(26.5);
+    expect(memberBalances[1].balance[0].code).toBe("USD");
+    expect(memberBalances[1].balance[0].amount).toBe(-13.5);
+    expect(memberBalances[2].balance[0].code).toBe("USD");
+    expect(memberBalances[2].balance[0].amount).toBe(-13);
   });
 
   it("should allow settlement of expenses", async () => {
     const groupRes = await getGroup(groupId);
     const members = groupRes.members as Member[];
 
-    await createExpense(groupId, members[0].id, "Musical on Broadway", 100);
-    await addSettlement(groupId, members[1].id, members[0].id, 33);
-    await addSettlement(groupId, members[2].id, members[0].id, 33);
+    await createExpense(
+      groupId,
+      members[0].id,
+      "Musical on Broadway",
+      new Money("USD", 100)
+    );
+    await addSettlement(
+      groupId,
+      members[1].id,
+      members[0].id,
+      new Money("USD", 33)
+    );
+    await addSettlement(
+      groupId,
+      members[2].id,
+      members[0].id,
+      new Money("USD", 33)
+    );
 
     const memberBalances = await calculateBalances(groupId);
     expect(memberBalances.length).toBe(3);
 
-    expect(memberBalances[0].balance).toBe(0);
-    expect(memberBalances[1].balance).toBe(0);
-    expect(memberBalances[2].balance).toBe(0);
+    expect(memberBalances[0].balance[0].code).toBe("USD");
+    expect(memberBalances[0].balance[0].amount).toBe(0);
+    expect(memberBalances[1].balance[0].code).toBe("USD");
+    expect(memberBalances[1].balance[0].amount).toBe(0);
+    expect(memberBalances[2].balance[0].code).toBe("USD");
+    expect(memberBalances[2].balance[0].amount).toBe(0);
   });
 });

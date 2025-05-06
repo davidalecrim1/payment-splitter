@@ -1,16 +1,16 @@
 import request from "supertest";
 import app from "../../src/app.ts";
-import { MemberBalance } from "../../src/entities/Group.ts";
+import { MemberBalance, Money } from "../../src/entities/Group.ts";
 
 export async function createExpense(
   groupId: string,
   memberId: string,
   name: string,
-  amount: number
+  currency: Money
 ) {
   const res = await request(app)
     .post(`/groups/${groupId}/expenses`)
-    .send({ expense: { name, amount, paidByMemberId: memberId } });
+    .send({ expense: { name, currency, paidByMemberId: memberId } });
 
   expect(res.status).toBe(200);
 }
@@ -52,7 +52,7 @@ export async function addSettlement(
   groupId: string,
   fromMemberId: string,
   toMemberId: string,
-  amount: number
+  currency: Money
 ) {
   const res = await request(app)
     .post(`/groups/${groupId}/settlements`)
@@ -60,7 +60,7 @@ export async function addSettlement(
       settlement: {
         fromMemberId: fromMemberId,
         toMemberId: toMemberId,
-        amount: amount,
+        currency: currency,
       },
     });
   expect(res.status).toBe(200);

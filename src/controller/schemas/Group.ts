@@ -20,7 +20,10 @@ export const GroupIdParamSchema = z.object({
 export const RecordExpenseRequestSchema = z.object({
   expense: z.object({
     name: z.string().min(1, "Name is required"),
-    amount: z.number().positive("Amount must be positive"),
+    currency: z.object({
+      amount: z.number().positive("Amount must be positive"),
+      code: z.string().min(1, "Should be a valid currency code"),
+    }),
     paidByMemberId: z.string().min(1, "Paid by is required"),
   }),
 });
@@ -33,12 +36,16 @@ export const AddSettlementRequestSchema = z.object({
   settlement: z.object({
     fromMemberId: z.string().min(1, "From is required"),
     toMemberId: z.string().min(1, "To is required"),
-    amount: z.number().positive("Amount must be positive"),
+    currency: z.object({
+      amount: z.number().positive("Amount must be positive"),
+      code: z.string().min(1, "Should be a valid currency code"),
+    }),
   }),
 });
 
 export interface CsvExpensesRequest {
   name: string;
-  amount: string;
+  currencyCode: string;
+  currencyAmount: string;
   paidByMemberId: MemberId;
 }

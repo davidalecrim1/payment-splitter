@@ -92,7 +92,7 @@ export class GroupController {
       const groupId = req.params.groupId;
       const expense = new Expense(
         parseRequest.data.expense.name,
-        parseRequest.data.expense.amount,
+        parseRequest.data.expense.currency,
         parseRequest.data.expense.paidByMemberId
       );
 
@@ -173,7 +173,7 @@ export class GroupController {
       const settlement = new Settlement(
         parseRequest.data.settlement.fromMemberId,
         parseRequest.data.settlement.toMemberId,
-        parseRequest.data.settlement.amount
+        parseRequest.data.settlement.currency
       );
 
       await this.svc.addSettlement(groupId, settlement);
@@ -214,7 +214,11 @@ export class GroupController {
       }) as CsvExpensesRequest[];
 
       const expenses = expensesReq.map((e) => {
-        return new Expense(e.name, parseFloat(e.amount), e.paidByMemberId);
+        return new Expense(
+          e.name,
+          { code: e.currencyCode, amount: parseFloat(e.currencyAmount) },
+          e.paidByMemberId
+        );
       });
 
       await this.svc.recordExpenses(groupId, expenses);

@@ -1,5 +1,5 @@
-name;amount;paidByMemberId;
-Netflix Subscription;30;01967d60-4fdf-72e4-bdae-738aefb71ecc;
-Office 365 Subscription;100;01967d60-4fdf-72e4-bdae-738aefb71ecc;
-Dinner at Outback;200.50;01967d60-4fdf-72e4-bdae-738aefb71ecc;
-Taylor Swift Tickets;1000;01967d60-4fdf-72e4-bdae-738aefb71ecc;
+name;currencyCode;currencyAmount;paidByMemberId
+Netflix Subscription;USD;30;0196a4f6-d8fb-727e-b009-f69ce768f053
+Office 365 Subscription;USD;100;0196a4f6-d8fb-727e-b009-f69ce768f053
+Dinner at Outback;USD;200.50;0196a4f6-d8fb-727e-b009-f69ce768f053
+Taylor Swift Tickets;USD;1000;0196a4f6-d8fb-727e-b009-f69ce768f053
