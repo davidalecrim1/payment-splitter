@@ -1,16 +1,18 @@
 import cors from "cors";
 import express from "express";
-import { GroupRoutes } from "./routes/GroupRoutes.ts";
+import { createGroupRoutes } from "./routes/GroupRoutes.ts";
 
-const app = express();
+export async function createApp() {
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
 
-app.use(cors());
-app.use(express.json());
+  const groupRoutes = await createGroupRoutes();
+  app.use("/groups", groupRoutes);
 
-app.use("/groups", GroupRoutes);
+  app.get("/ping", (req, res) => {
+    res.status(200).json({ message: "pong" });
+  });
 
-app.get("/ping", (req, res) => {
-  res.status(200).json({ message: "pong" });
-});
-
-export default app;
+  return app;
+}

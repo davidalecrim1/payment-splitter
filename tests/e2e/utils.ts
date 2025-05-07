@@ -1,8 +1,9 @@
+import { Express } from "express";
 import request from "supertest";
-import app from "../../src/app.ts";
 import { MemberBalance, Money } from "../../src/entities/Group.ts";
 
 export async function createExpense(
+  app: Express,
   groupId: string,
   memberId: string,
   name: string,
@@ -15,13 +16,13 @@ export async function createExpense(
   expect(res.status).toBe(200);
 }
 
-export async function getGroup(groupId: string) {
+export async function getGroup(app: Express, groupId: string) {
   const res = await request(app).get(`/groups/${groupId}`).send();
   expect(res.status).toBe(200);
   return res.body;
 }
 
-export async function createGroup(membersNames: string[]) {
+export async function createGroup(app: Express, membersNames: string[]) {
   const res = await request(app)
     .post("/groups")
     .send({
@@ -33,6 +34,7 @@ export async function createGroup(membersNames: string[]) {
 }
 
 export async function calculateBalances(
+  app: Express,
   groupId: string,
   splitExpensesBetweenMembers?: string[]
 ) {
@@ -49,6 +51,7 @@ export async function calculateBalances(
 }
 
 export async function addSettlement(
+  app: Express,
   groupId: string,
   fromMemberId: string,
   toMemberId: string,
