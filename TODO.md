@@ -1,0 +1,23 @@
+## Project Management Tasks
+- [x] Setup Node with Typescript in VS Code.
+- [x] Setup Jest with Typescript in VS Code.
+- [x] Design a initial domain model (core of the application).
+- [x] Code and create the unit tests for group creation with a service layer.
+- [x] Code and create the unit tests for expenses in a group.
+- [x] Add functionality of splitting the expenses between members.
+- [x] Create the get balance for members of the group with unit tests.
+- [x] Add settelment between members.
+- [x] Design the overall REST API endpoints.
+- [x] Add schema validation and error handling in the API layer.
+- [x] Create Postmam Collection.
+- [x] Add CSV upload and processing in the API.
+- [x] Fix the bug of float values in the expenses when calculate the balance.
+- [x] Write E2E tests on the API using Jest.
+- [x] Consider a Event Driven Design for external notifications.
+- [x] Add unit tests to validate the domain events design for external notifications.
+- [x] Add Email Notifications with a Fake Message Queue (Event Driven). See the impacts in the current domain mode.
+- [x] Make the unit and E2E tests more reusable and apply refactor techniques in them.
+- [x] Consider a feature to add currency (BRL, USD, etc)
+- [x] Fix and csv endpoint and update docs.
+- [ ] Create a Docker compose to simulate the infrastructure of MongoDB and RabbitMQ.
+- [ ] Add Swagger UI in the API.

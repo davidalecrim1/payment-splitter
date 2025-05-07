@@ -7,13 +7,15 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node --enable-source-maps dist/index.js",
-    "dev": "PORT=3002 MOCK_DATABASE=true MOCK_MESSAGE_QUEUE=true node --no-warnings --enable-source-maps --loader ts-node/esm src/index.ts",
+    "dev": "PORT=3003 MOCK_DATABASE=true MOCK_MESSAGE_QUEUE=true node --no-warnings --enable-source-maps --loader ts-node/esm src/index.ts",
+    "dev2": "ts-node-dev --respawn --transpile-only --no-notify --exit-child src/index.ts",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },
   "author": "David Alecrim",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.10.8",
     "cors": "^2.8.5",
     "csv-parse": "^5.6.0",
     "express": "^4.21.2",
@@ -23,6 +25,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/jest": "^29.5.14",

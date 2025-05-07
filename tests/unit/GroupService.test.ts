@@ -288,7 +288,4 @@ describe("Group Service", () => {
     expect(updatedMembersBalances[1].balance[1].code).toBe("BRL");
     expect(updatedMembersBalances[1].balance[1].amount).toBe(0);
   });
-
-  // TODO: Evolve E2E tests for this new feature.
-  // TODO: Update Postman Collection.
 });

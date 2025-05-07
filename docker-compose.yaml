@@ -1,0 +1,38 @@
+services:
+  app:
+    container_name: payment-splitter-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3002:3002"
+    depends_on:
+      - rabbitmq
+    environment:
+      - PORT=3002
+      - MOCK_DATABASE=true
+      - MOCK_MESSAGE_QUEUE=false
+      - RABBITMQ_URL=amqp://rabbitmq
+    command: npm run dev
+    networks:
+      - app-network
+
+  rabbitmq:
+    container_name: payment-splitter-rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  rabbitmq_data:
