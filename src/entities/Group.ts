@@ -8,20 +8,27 @@ export class Group {
   name: string;
   protected members: Member[];
   protected expenses: Expense[];
-  protected setlements: Settlement[];
+  protected settlements: Settlement[];
 
-  constructor(
+  private constructor(
+    id: string,
     name: string,
     members: Member[],
-    id?: string,
-    expenses?: Expense[],
-    settlements?: Settlement[]
+    expenses: Expense[],
+    settlements: Settlement[]
   ) {
+    this.id = id;
     this.name = name;
-    this.members = members ?? [];
-    this.id = id ?? uuidv7();
-    this.expenses = expenses ?? [];
-    this.setlements = settlements ?? [];
+    this.members = members;
+    this.expenses = expenses;
+    this.settlements = settlements;
+  }
+
+  static create(name: string, members: Member[]): Group {
+    const id = uuidv7();
+    const expenses: Expense[] = [];
+    const settlements: Settlement[] = [];
+    return new Group(id, name, members, expenses, settlements);
   }
 
   static rehydrate(props: {
@@ -32,9 +39,9 @@ export class Group {
     settlements: Settlement[];
   }): Group {
     return new Group(
+      props.id,
       props.name,
       props.members,
-      props.id,
       props.expenses,
       props.settlements
     );
@@ -153,7 +160,7 @@ export class Group {
         );
 
         let netBalance = totalPaid - totalSplit;
-        this.setlements.forEach((s) => {
+        this.settlements.forEach((s) => {
           if (s.fromMemberId === member.id && s.currency.code === code) {
             netBalance += s.currency.amount;
           }
@@ -212,7 +219,7 @@ export class Group {
       throw new Error("Cannot settle debt with yourself");
     }
 
-    this.setlements.push(settlement);
+    this.settlements.push(settlement);
   }
 }
 

@@ -21,7 +21,7 @@ export class GroupService {
   }
 
   async createGroup(name: string, members: Member[]): Promise<string> {
-    const group = new Group(name, members);
+    const group = Group.create(name, members);
     await this.repo.putGroup(group);
     return group.id;
   }

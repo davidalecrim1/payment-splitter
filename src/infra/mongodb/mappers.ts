@@ -6,7 +6,7 @@ export const toMongoDbDocument = (group: Group) => {
     name: group.name,
     members: group["members"],
     expenses: group["expenses"],
-    settlements: group["setlements"],
+    settlements: group["settlements"],
   };
 };
 
