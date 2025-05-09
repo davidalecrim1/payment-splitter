@@ -1,6 +1,6 @@
 import { createApp } from "./app.ts";
-import { disconnectMongoDb } from "./infra/mongodb/db.ts";
-import { closeRabbitMQ } from "./infra/rabbitmq/rabbit-mq.ts";
+import { MongoDbClient } from "./infra/mongodb/db.ts";
+import { RabbitMQClient } from "./infra/rabbitmq/rabbit-mq.ts";
 
 const PORT = process.env.PORT || 3007;
 
@@ -14,8 +14,10 @@ const startServer = async () => {
     process.on("SIGINT", async () => {
       console.log("Shutting down server...");
       server.close(() => console.log("HTTP server closed."));
-      await closeRabbitMQ();
-      await disconnectMongoDb();
+
+      await RabbitMQClient.getInstance().close();
+      await MongoDbClient.getInstance().disconnect();
+
       process.exit(0);
     });
   } catch (err) {

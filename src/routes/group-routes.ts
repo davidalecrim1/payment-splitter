@@ -6,8 +6,8 @@ import { MongoGroupRepository } from "../adapters/mongodb-group-repository.ts";
 import { RabbitMessageQueue } from "../adapters/rabbit-message-queue.ts";
 import { GroupController } from "../controller/group-controller.ts";
 import { validateGroupIdParam } from "../controller/middleware/group.ts";
-import { connectMongoDb } from "../infra/mongodb/db.ts";
-import { getChannel } from "../infra/rabbitmq/rabbit-mq.ts";
+import { MongoDbClient } from "../infra/mongodb/db.ts";
+import { RabbitMQClient } from "../infra/rabbitmq/rabbit-mq.ts";
 import { GroupRepository } from "../services/group-repository.ts";
 import { GroupService } from "../services/group-service.ts";
 import { MessageQueue } from "../services/message-queue.ts";
@@ -19,7 +19,8 @@ export async function createGroupRoutes() {
   if (process.env.MOCK_DATABASE === "true") {
     groupRepository = new FakeGroupRepository();
   } else {
-    await connectMongoDb();
+    const mongoDbClient = MongoDbClient.getInstance();
+    await mongoDbClient.connect();
     groupRepository = new MongoGroupRepository();
   }
 
@@ -27,9 +28,10 @@ export async function createGroupRoutes() {
   if (process.env.MOCK_MESSAGE_QUEUE === "true") {
     messageQueue = new FakeMessageQueue();
   } else {
-    const queueName = "groups";
-    const chan = await getChannel(queueName);
-    messageQueue = new RabbitMessageQueue(chan, queueName);
+    const groupQueueName = "groups";
+    const rabbtMqClient = RabbitMQClient.getInstance();
+    const groupChannel = await rabbtMqClient.getChannel(groupQueueName);
+    messageQueue = new RabbitMessageQueue(groupChannel, groupQueueName);
   }
 
   const groupService = new GroupService(groupRepository, messageQueue);

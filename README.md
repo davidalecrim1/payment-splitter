@@ -12,8 +12,14 @@ Creating a back-end system for payment split for groups.
 - Service Layer: This is the orchestration layer responsible for ensuring the valid state of group is persisted.
 - Adapters Layer: This is the external adapters of our application (Secondary Adapters) in Hexagonal Architecture.
 
-## API Documentation
+## Documentation
+
+### API Documentation
 TODO: Add Swagger UI.
+
+### Domain Model
+The group is designed to be a consistency boundary of the application as an aggregate root.
+
 
 ## Postman Collection
 Exported [Project Collection](./docs/payment-splitter.postman_collection.json) using Collections 2.1 from Postman.
