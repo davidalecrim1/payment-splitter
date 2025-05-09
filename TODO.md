@@ -21,5 +21,6 @@
 - [x] Fix and csv endpoint and update docs.
 - [x] Create a Docker compose to simulate the infrastructure with RabbitMQ.
 - [x] Add MongoDB as the database.
+- [x] Improve docs and make this public.
 - [ ] Create a process to build this application to production instead of using npm run dev in Docker.
 - [ ] Add Swagger UI in the API.
