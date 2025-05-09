@@ -1,6 +1,6 @@
 import { Express } from "express";
 import { createApp } from "../../src/app.ts";
-import { Member, Money } from "../../src/entities/Group.ts";
+import { Member, Money } from "../../src/entities/group.ts";
 import {
   addSettlement,
   calculateBalances,
@@ -14,7 +14,8 @@ describe("Payment Splitter E2E", () => {
   let app: Express;
 
   beforeAll(async () => {
-    process.env.MOCK_MESSAGE_QUEUE = "true";
+    process.env.MOCK_MESSAGE_QUEUE = "true"; // TODO: Add tests containers for this.
+    process.env.MOCK_DATABASE = "true"; // TODO: Add tests containers for this.
     app = await createApp();
   });
 

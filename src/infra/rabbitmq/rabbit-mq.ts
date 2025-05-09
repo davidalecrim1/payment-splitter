@@ -5,9 +5,10 @@ const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://localhost";
 let conn: amqp.ChannelModel;
 let chan: amqp.Channel;
 
-export async function initRabbitMQ(): Promise<void> {
+export async function connectRabbitMQ(): Promise<void> {
   conn = await amqp.connect(RABBITMQ_URL);
   chan = await conn.createChannel();
+  console.log("RabbitMQ connected!");
 }
 
 export async function closeRabbitMQ(): Promise<void> {
@@ -17,7 +18,7 @@ export async function closeRabbitMQ(): Promise<void> {
 
 export async function getChannel(queueName: string): Promise<amqp.Channel> {
   if (chan === undefined) {
-    await initRabbitMQ();
+    await connectRabbitMQ();
   }
 
   await chan.assertQueue(queueName, { durable: true });

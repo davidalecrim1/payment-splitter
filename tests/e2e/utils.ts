@@ -1,6 +1,6 @@
 import { Express } from "express";
 import request from "supertest";
-import { MemberBalance, Money } from "../../src/entities/Group.ts";
+import { MemberBalance, Money } from "../../src/entities/group.ts";
 
 export async function createExpense(
   app: Express,

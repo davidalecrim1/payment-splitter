@@ -1,24 +1,26 @@
 import { Router } from "express";
 import multer from "multer";
-import { FakeGroupRepository } from "../adapters/FakeGroupRepository.ts";
-import { FakeMessageQueue } from "../adapters/FakeMessageQueue.ts";
-import { RabbitMessageQueue } from "../adapters/RabbitMessageQueue.ts";
-import { GroupController } from "../controller/GroupController.ts";
-import { validateGroupIdParam } from "../controller/middleware/Group.ts";
-import { getChannel } from "../infra/RabbitMq.ts";
-import { GroupRepository } from "../services/GroupRepository.ts";
-import { GroupService } from "../services/GroupService.ts";
-import { MessageQueue } from "../services/MessageQueue.ts";
+import { FakeGroupRepository } from "../adapters/fake-group-repository.ts";
+import { FakeMessageQueue } from "../adapters/fake-message-queue.ts";
+import { MongoGroupRepository } from "../adapters/mongodb-group-repository.ts";
+import { RabbitMessageQueue } from "../adapters/rabbit-message-queue.ts";
+import { GroupController } from "../controller/group-controller.ts";
+import { validateGroupIdParam } from "../controller/middleware/group.ts";
+import { connectMongoDb } from "../infra/mongodb/db.ts";
+import { getChannel } from "../infra/rabbitmq/rabbit-mq.ts";
+import { GroupRepository } from "../services/group-repository.ts";
+import { GroupService } from "../services/group-service.ts";
+import { MessageQueue } from "../services/message-queue.ts";
 
 export async function createGroupRoutes() {
   const router = Router();
 
   let groupRepository: GroupRepository;
-  if (process.env.MOCK_DATABASE === "false") {
-    // TODO: Add a real database here.
-    throw new Error("DynamoDB implementation is not yet available.");
-  } else {
+  if (process.env.MOCK_DATABASE === "true") {
     groupRepository = new FakeGroupRepository();
+  } else {
+    await connectMongoDb();
+    groupRepository = new MongoGroupRepository();
   }
 
   let messageQueue: MessageQueue;

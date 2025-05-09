@@ -1,21 +1,43 @@
 import { v7 as uuidv7 } from "uuid";
-import { MemberNotFoundError } from "./Errors.ts";
+import { MemberNotFoundError, NoExpensesToSplitError } from "./errors.ts";
 
 export type MemberId = string;
 
 export class Group {
   id: string;
   name: string;
-  private members: Member[];
-  private expenses: Expense[];
-  private setlements: Settlement[];
+  protected members: Member[];
+  protected expenses: Expense[];
+  protected setlements: Settlement[];
 
-  constructor(_name: string, _members: Member[]) {
-    this.id = uuidv7();
-    this.name = _name;
-    this.members = _members;
-    this.expenses = [];
-    this.setlements = [];
+  constructor(
+    name: string,
+    members: Member[],
+    id?: string,
+    expenses?: Expense[],
+    settlements?: Settlement[]
+  ) {
+    this.name = name;
+    this.members = members ?? [];
+    this.id = id ?? uuidv7();
+    this.expenses = expenses ?? [];
+    this.setlements = settlements ?? [];
+  }
+
+  static rehydrate(props: {
+    id: string;
+    name: string;
+    members: Member[];
+    expenses: Expense[];
+    settlements: Settlement[];
+  }): Group {
+    return new Group(
+      props.name,
+      props.members,
+      props.id,
+      props.expenses,
+      props.settlements
+    );
   }
 
   getMember(memberId: string): Member {
@@ -25,6 +47,10 @@ export class Group {
     }
 
     return member;
+  }
+
+  addMember(member: Member): void {
+    this.members.push(member);
   }
 
   addExpense(expense: Expense) {
@@ -38,7 +64,7 @@ export class Group {
     betweenMembers: MemberId[] = this.members.map((m) => m.id)
   ): ExpenseSplit[] {
     if (this.expenses.length === 0) {
-      throw new Error("No expenses to split");
+      throw new NoExpensesToSplitError();
     }
 
     if (betweenMembers.length === 0) {

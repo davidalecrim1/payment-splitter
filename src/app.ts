@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-import { createGroupRoutes } from "./routes/GroupRoutes.ts";
+import { createGroupRoutes } from "./routes/group-routes.ts";
 
 export async function createApp() {
   const app = express();

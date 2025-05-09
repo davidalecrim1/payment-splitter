@@ -13,3 +13,11 @@ export class GroupNotFoundError extends Error {
     this.name = "GroupNotFoundError";
   }
 }
+
+export class NoExpensesToSplitError extends Error {
+  name: string;
+  constructor(message: string = "No expenses to split") {
+    super(message);
+    this.name = "NoExpensesToSplitError";
+  }
+}

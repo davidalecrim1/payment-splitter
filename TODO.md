@@ -19,5 +19,6 @@
 - [x] Make the unit and E2E tests more reusable and apply refactor techniques in them.
 - [x] Consider a feature to add currency (BRL, USD, etc)
 - [x] Fix and csv endpoint and update docs.
-- [ ] Create a Docker compose to simulate the infrastructure of MongoDB and RabbitMQ.
+- [ ] Create a Docker compose to simulate the infrastructure with RabbitMQ.
+- [ ] Add MongoDB as the database.
 - [ ] Add Swagger UI in the API.

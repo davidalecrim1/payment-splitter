@@ -1,15 +1,19 @@
 import { parse } from "csv-parse/sync";
 import type { NextFunction, Request, Response } from "express";
-import { GroupNotFoundError, MemberNotFoundError } from "../entities/Errors.ts";
-import { Expense, Member, Settlement } from "../entities/Group.ts";
-import { GroupService } from "../services/GroupService.js";
+import {
+  GroupNotFoundError,
+  MemberNotFoundError,
+  NoExpensesToSplitError,
+} from "../entities/errors.ts";
+import { Expense, Member, Settlement } from "../entities/group.ts";
+import { GroupService } from "../services/group-service.ts";
 import {
   AddSettlementRequestSchema,
   calculateMembersBalanceRequestSchema,
   CreateGroupRequestSchema,
   CsvExpensesRequest,
   RecordExpenseRequestSchema,
-} from "./schemas/Group.ts";
+} from "./schemas/group.ts";
 
 export class GroupController {
   private svc: GroupService;
@@ -141,7 +145,8 @@ export class GroupController {
     } catch (error) {
       if (
         error instanceof GroupNotFoundError ||
-        error instanceof MemberNotFoundError
+        error instanceof MemberNotFoundError ||
+        error instanceof NoExpensesToSplitError
       ) {
         res.status(400).json({
           message: error.message,

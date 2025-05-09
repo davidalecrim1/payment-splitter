@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { GroupIdParamSchema } from "../schemas/Group.ts";
+import { GroupIdParamSchema } from "../schemas/group.ts";
 
 export function validateGroupIdParam(
   req: Request,

@@ -10,9 +10,9 @@ import {
   Member,
   Money,
   Settlement,
-} from "../../src/entities/Group.ts";
+} from "../../src/entities/group.ts";
 import { GroupRepository } from "../../src/services/GroupRepository.ts";
-import { GroupService } from "../../src/services/GroupService.ts";
+import { GroupService } from "../../src/services/group-service.ts";
 
 describe("Group Service", () => {
   let repo: GroupRepository;

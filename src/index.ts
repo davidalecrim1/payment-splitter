@@ -1,7 +1,8 @@
 import { createApp } from "./app.ts";
-import { closeRabbitMQ } from "./infra/RabbitMq.ts";
+import { disconnectMongoDb } from "./infra/mongodb/db.ts";
+import { closeRabbitMQ } from "./infra/rabbitmq/rabbit-mq.ts";
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3007;
 
 const startServer = async () => {
   try {
@@ -14,10 +15,11 @@ const startServer = async () => {
       console.log("Shutting down server...");
       server.close(() => console.log("HTTP server closed."));
       await closeRabbitMQ();
+      await disconnectMongoDb();
       process.exit(0);
     });
-  } catch (error) {
-    console.error("Failed to start the server:", error);
+  } catch (err) {
+    console.error("Failed to start the server:", err);
     process.exit(1);
   }
 };

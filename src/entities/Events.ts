@@ -1,4 +1,4 @@
-import { Expense, Settlement } from "./Group.ts";
+import { Expense, Settlement } from "./group.ts";
 
 export interface DomainEvent {
   type: string;

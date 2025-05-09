@@ -1,5 +1,5 @@
-import { DomainEvent } from "../entities/Events.ts";
-import { MessageQueue } from "../services/MessageQueue.ts";
+import { DomainEvent } from "../entities/events.ts";
+import { MessageQueue } from "../services/message-queue.ts";
 
 import amqp from "amqplib";
 

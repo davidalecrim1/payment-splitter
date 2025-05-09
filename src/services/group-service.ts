@@ -1,5 +1,5 @@
-import { GroupNotFoundError } from "../entities/Errors.ts";
-import { DebtSettled, ExpenseRecorded } from "../entities/Events.ts";
+import { GroupNotFoundError } from "../entities/errors.ts";
+import { DebtSettled, ExpenseRecorded } from "../entities/events.ts";
 import {
   Expense,
   Group,
@@ -7,9 +7,9 @@ import {
   MemberBalance,
   MemberId,
   Settlement,
-} from "../entities/Group.ts";
-import { GroupRepository } from "./GroupRepository.ts";
-import { MessageQueue } from "./MessageQueue.ts";
+} from "../entities/group.ts";
+import { GroupRepository } from "./group-repository.ts";
+import { MessageQueue } from "./message-queue.ts";
 
 export class GroupService {
   private repo: GroupRepository;

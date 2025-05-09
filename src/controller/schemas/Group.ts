@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MemberId } from "../../entities/Group.ts";
+import { MemberId } from "../../entities/group.ts";
 
 export const CreateGroupRequestSchema = z.object({
   name: z.string().min(1, "Name is required"),

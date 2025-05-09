@@ -1,5 +1,5 @@
-import { Group } from "../entities/Group.ts";
-import { GroupRepository } from "../services/GroupRepository.ts";
+import { Group } from "../entities/group.ts";
+import { GroupRepository } from "../services/group-repository.ts";
 
 export class FakeGroupRepository implements GroupRepository {
   private groups: Map<string, Group> = new Map();
