@@ -41,3 +41,7 @@ By treating the group as a consistency boundary, we guarantee atomic updates and
 
 ## Postman Collection
 You can explore and test the API endpoints using the exported [Project Collection](./docs/payment-splitter.postman_collection.json) (Postman Collections v2.1).
+
+## License
+
+[MIT LICENSE](./LICENSE)

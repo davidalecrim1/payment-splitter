@@ -1,5 +1,5 @@
 import { v7 as uuidv7 } from "uuid";
-import { MemberNotFoundError, NoExpensesToSplitError } from "./errors.ts";
+import { MemberNotFoundError, NoExpensesToSplitError } from "./errors";
 
 export type MemberId = string;
 
